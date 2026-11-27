@@ -8,6 +8,7 @@ import {
   deleteLead,
 } from "@/app/actions";
 import { CopyButton } from "@/components/copy-button";
+import { SubmitButton } from "@/components/submit-button";
 
 interface LeadMessage {
   id: string;
@@ -76,7 +77,7 @@ async function LeadPilotWorkspace() {
       </div>
 
       {/* Business Profile / Onboarding */}
-      <section className="rounded-lg border p-5 space-y-4">
+      <section className="space-y-4 rounded-lg border p-5">
         <div>
           <h2 className="text-lg font-semibold">
             {business ? "Business Settings" : "Step 1: Set Up Your Business"}
@@ -88,7 +89,7 @@ async function LeadPilotWorkspace() {
 
         <form action={saveBusinessProfile} className="grid gap-4 sm:grid-cols-2">
           <div>
-            <label className="block text-sm font-medium mb-1">Business Name *</label>
+            <label className="mb-1 block text-sm font-medium">Business Name *</label>
             <input
               name="name"
               required
@@ -98,7 +99,7 @@ async function LeadPilotWorkspace() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Industry</label>
+            <label className="mb-1 block text-sm font-medium">Industry</label>
             <input
               name="industry"
               defaultValue={business?.industry ?? ""}
@@ -107,7 +108,7 @@ async function LeadPilotWorkspace() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Phone</label>
+            <label className="mb-1 block text-sm font-medium">Phone</label>
             <input
               name="phone"
               defaultValue={business?.phone ?? ""}
@@ -116,7 +117,7 @@ async function LeadPilotWorkspace() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Reply Tone</label>
+            <label className="mb-1 block text-sm font-medium">Reply Tone</label>
             <input
               name="tone"
               defaultValue={business?.tone ?? "friendly and professional"}
@@ -125,19 +126,18 @@ async function LeadPilotWorkspace() {
             />
           </div>
           <div className="sm:col-span-2">
-            <button
-              type="submit"
+            <SubmitButton
+              label={business ? "Update Business Profile" : "Save Business Profile"}
+              pendingLabel="Saving..."
               className="rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              {business ? "Update Business Profile" : "Save Business Profile"}
-            </button>
+            />
           </div>
         </form>
       </section>
 
       {/* Add & Analyze New Lead */}
       {business && (
-        <section className="rounded-lg border p-5 space-y-4">
+        <section className="space-y-4 rounded-lg border p-5">
           <div>
             <h2 className="text-lg font-semibold">New Incoming Lead</h2>
             <p className="text-sm text-gray-500">
@@ -148,7 +148,7 @@ async function LeadPilotWorkspace() {
           <form action={createAndAnalyzeLead} className="space-y-4">
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label className="block text-sm font-medium mb-1">Lead Name</label>
+                <label className="mb-1 block text-sm font-medium">Lead Name</label>
                 <input
                   name="leadName"
                   placeholder="e.g. Priya Sharma"
@@ -156,7 +156,7 @@ async function LeadPilotWorkspace() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Contact (Phone / Email)</label>
+                <label className="mb-1 block text-sm font-medium">Contact (Phone / Email)</label>
                 <input
                   name="contact"
                   placeholder="e.g. priya@example.com"
@@ -165,7 +165,7 @@ async function LeadPilotWorkspace() {
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Customer Message *</label>
+              <label className="mb-1 block text-sm font-medium">Customer Message *</label>
               <textarea
                 name="message"
                 required
@@ -174,12 +174,11 @@ async function LeadPilotWorkspace() {
                 className="w-full rounded border px-3 py-2 text-sm"
               />
             </div>
-            <button
-              type="submit"
+            <SubmitButton
+              label="Analyze Lead & Draft Reply"
+              pendingLabel="Analyzing..."
               className="rounded bg-black px-4 py-2 text-sm font-medium text-white hover:bg-gray-800"
-            >
-              Analyze Lead & Draft Reply
-            </button>
+            />
           </form>
         </section>
       )}
@@ -197,7 +196,7 @@ async function LeadPilotWorkspace() {
               const draft = lead.messages?.find((m) => m.ai_generated);
               const contactDisplay = lead.email || lead.phone;
               return (
-                <div key={lead.id} className="rounded-lg border p-5 space-y-3">
+                <div key={lead.id} className="space-y-3 rounded-lg border p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <div>
                       <h3 className="font-semibold">{lead.name}</h3>
@@ -221,27 +220,33 @@ async function LeadPilotWorkspace() {
                           defaultValue={lead.status || "new"}
                           className="rounded border bg-transparent px-2 py-1 text-xs"
                         >
-                          <option value="new" className="text-black">New</option>
-                          <option value="contacted" className="text-black">Contacted</option>
-                          <option value="booked" className="text-black">Booked</option>
-                          <option value="closed" className="text-black">Closed</option>
+                          <option value="new" className="text-black">
+                            New
+                          </option>
+                          <option value="contacted" className="text-black">
+                            Contacted
+                          </option>
+                          <option value="booked" className="text-black">
+                            Booked
+                          </option>
+                          <option value="closed" className="text-black">
+                            Closed
+                          </option>
                         </select>
-                        <button
-                          type="submit"
+                        <SubmitButton
+                          label="Save"
+                          pendingLabel="Saving..."
                           className="rounded border px-2 py-1 text-xs hover:bg-gray-800"
-                        >
-                          Save
-                        </button>
+                        />
                       </form>
 
                       <form action={deleteLead}>
                         <input type="hidden" name="leadId" value={lead.id} />
-                        <button
-                          type="submit"
+                        <SubmitButton
+                          label="Delete"
+                          pendingLabel="Deleting..."
                           className="rounded border border-red-800 px-2 py-1 text-xs text-red-400 hover:bg-red-950"
-                        >
-                          Delete
-                        </button>
+                        />
                       </form>
                     </div>
                   </div>
@@ -262,7 +267,7 @@ async function LeadPilotWorkspace() {
                   </div>
 
                   {draft && (
-                    <div className="rounded bg-gray-900 p-3 text-sm text-gray-100 space-y-2">
+                    <div className="space-y-2 rounded bg-gray-900 p-3 text-sm text-gray-100">
                       <div className="flex items-center justify-between">
                         <p className="text-xs font-semibold uppercase text-gray-400">
                           AI Drafted Reply
