@@ -76,7 +76,7 @@ async function LeadPilotWorkspace() {
         </form>
       </div>
 
-      {/* Business Profile / Onboarding */}
+      {/* Business Profile */}
       <section className="space-y-4 rounded-lg border p-5">
         <div>
           <h2 className="text-lg font-semibold">
@@ -135,7 +135,7 @@ async function LeadPilotWorkspace() {
         </form>
       </section>
 
-      {/* Public Inquiry Form Link */}
+      {/* Public Inquiry Link */}
       {business && (
         <section className="space-y-2 rounded-lg border p-5">
           <div className="flex flex-wrap items-center justify-between gap-2">
@@ -155,7 +155,7 @@ async function LeadPilotWorkspace() {
         </section>
       )}
 
-      {/* Add & Analyze New Lead */}
+      {/* New Incoming Lead */}
       {business && (
         <section className="space-y-4 rounded-lg border p-5">
           <div>
