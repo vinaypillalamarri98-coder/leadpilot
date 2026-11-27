@@ -1,8 +1,9 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { analyzeLeadAndDraftReply } from "@/lib/gemini";
+import { sendNewLeadEmail } from "@/lib/resend";
 
 export async function saveBusinessProfile(formData: FormData) {
   const supabase = await createClient();
@@ -118,6 +119,24 @@ export async function createAndAnalyzeLead(formData: FormData) {
   ]);
 
   if (msgError) throw new Error(msgError.message);
+
+  try {
+    await sendNewLeadEmail({
+      businessName: business.name,
+      leadName: leadName || "Customer",
+      contact: contact || null,
+      source: "manual",
+      serviceNeeded: analysis.service_needed,
+      urgency: analysis.urgency,
+      preferredTime: analysis.preferred_time,
+      budget: analysis.budget,
+      score: analysis.score,
+      message,
+      replyDraft: analysis.reply_draft,
+    });
+  } catch (err) {
+    console.error("Lead email notification error:", err);
+  }
 
   revalidatePath("/protected");
 }
@@ -247,6 +266,24 @@ export async function submitPublicLeadAction(
 
   if (msgError) {
     return { ok: false, error: msgError.message };
+  }
+
+  try {
+    await sendNewLeadEmail({
+      businessName: business.name,
+      leadName: leadName || "Customer",
+      contact: contact || null,
+      source: "public_form",
+      serviceNeeded: analysis.service_needed,
+      urgency: analysis.urgency,
+      preferredTime: analysis.preferred_time,
+      budget: analysis.budget,
+      score: analysis.score,
+      message,
+      replyDraft: analysis.reply_draft,
+    });
+  } catch (err) {
+    console.error("Lead email notification error:", err);
   }
 
   revalidatePath("/protected");
