@@ -4,13 +4,13 @@ import { useFormStatus } from "react-dom";
 
 interface SubmitButtonProps {
   label: string;
-  pendingLabel: string;
+  pendingLabel?: string;
   className?: string;
 }
 
 export function SubmitButton({
   label,
-  pendingLabel,
+  pendingLabel = "Submitting...",
   className = "",
 }: SubmitButtonProps) {
   const { pending } = useFormStatus();
@@ -19,7 +19,7 @@ export function SubmitButton({
     <button
       type="submit"
       disabled={pending}
-      className={`${className} disabled:cursor-not-allowed disabled:opacity-60`}
+      className={`${className} disabled:opacity-60`}
     >
       {pending ? pendingLabel : label}
     </button>
