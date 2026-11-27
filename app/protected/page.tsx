@@ -135,6 +135,26 @@ async function LeadPilotWorkspace() {
         </form>
       </section>
 
+      {/* Public Inquiry Form Link */}
+      {business && (
+        <section className="space-y-2 rounded-lg border p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-base font-semibold">Public Inquiry Form Link</h2>
+              <p className="text-sm text-gray-500">
+                Share this link with customers—submissions create leads and draft replies automatically.
+              </p>
+            </div>
+            <CopyButton
+              text={`https://leadpilot-pa3k.vercel.app/lead/${business.id}`}
+            />
+          </div>
+          <p className="break-all rounded bg-zinc-900 px-3 py-2 text-xs text-zinc-300">
+            /lead/{business.id}
+          </p>
+        </section>
+      )}
+
       {/* Add & Analyze New Lead */}
       {business && (
         <section className="space-y-4 rounded-lg border p-5">
