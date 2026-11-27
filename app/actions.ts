@@ -152,3 +152,81 @@ export async function deleteLead(formData: FormData) {
 
   revalidatePath("/protected");
 }
+export async function submitPublicLead(businessId: string, formData: FormData) {
+  if (!businessId) throw new Error("Missing business ID");
+
+  const leadName = String(formData.get("leadName") || "").trim();
+  const contact = String(formData.get("contact") || "").trim();
+  const message = String(formData.get("message") || "").trim();
+
+  if (!message) throw new Error("Please enter your message or requirement");
+
+  const supabase = await createClient();
+
+  const { data: business, error: bizError } = await supabase
+    .from("businesses")
+    .select("*")
+    .eq("id", businessId)
+    .single();
+
+  if (bizError || !business) {
+    throw new Error("Business not found");
+  }
+
+  const analysis = await analyzeLeadAndDraftReply({
+    businessName: business.name,
+    industry: business.industry,
+    tone: business.tone,
+    leadName: leadName || null,
+    message,
+  });
+
+  const isEmail = contact.includes("@");
+
+  const { data: lead, error: leadError } = await supabase
+    .from("leads")
+    .insert({
+      business_id: business.id,
+      name: leadName || "Customer",
+      email: isEmail ? contact : null,
+      phone: !isEmail && contact ? contact : null,
+      source: "public_form",
+      service_needed: analysis.service_needed,
+      message,
+      location: analysis.location,
+      urgency: analysis.urgency,
+      preferred_time: analysis.preferred_time,
+      budget: analysis.budget,
+      score: analysis.score,
+      status: "new",
+    })
+    .select()
+    .single();
+
+  if (leadError || !lead) {
+    throw new Error(leadError?.message || "Failed to submit inquiry");
+  }
+
+  const { error: msgError } = await supabase.from("messages").insert([
+    {
+      lead_id: lead.id,
+      direction: "inbound",
+      channel: isEmail ? "email" : "whatsapp",
+      content: message,
+      ai_generated: false,
+      status: "received",
+    },
+    {
+      lead_id: lead.id,
+      direction: "outbound",
+      channel: isEmail ? "email" : "whatsapp",
+      content: analysis.reply_draft,
+      ai_generated: true,
+      status: "draft",
+    },
+  ]);
+
+  if (msgError) throw new Error(msgError.message);
+
+  revalidatePath("/protected");
+}
