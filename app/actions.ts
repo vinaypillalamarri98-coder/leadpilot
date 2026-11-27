@@ -152,25 +152,41 @@ export async function deleteLead(formData: FormData) {
 
   revalidatePath("/protected");
 }
-export async function submitPublicLead(businessId: string, formData: FormData) {
-  if (!businessId) throw new Error("Missing business ID");
+
+export interface PublicLeadResult {
+  ok: boolean;
+  error?: string;
+  replyDraft?: string;
+  serviceNeeded?: string;
+}
+
+export async function submitPublicLeadAction(
+  businessId: string,
+  _prevState: PublicLeadResult | null,
+  formData: FormData
+): Promise<PublicLeadResult> {
+  if (!businessId) {
+    return { ok: false, error: "Missing business ID." };
+  }
 
   const leadName = String(formData.get("leadName") || "").trim();
   const contact = String(formData.get("contact") || "").trim();
   const message = String(formData.get("message") || "").trim();
 
-  if (!message) throw new Error("Please enter your message or requirement");
+  if (!message) {
+    return { ok: false, error: "Please enter your message or requirement." };
+  }
 
   const supabase = await createClient();
 
   const { data: business, error: bizError } = await supabase
     .from("businesses")
-    .select("*")
+    .select("id, name, industry, tone")
     .eq("id", businessId)
-    .single();
+    .maybeSingle();
 
   if (bizError || !business) {
-    throw new Error("Business not found");
+    return { ok: false, error: "Business not found." };
   }
 
   const analysis = await analyzeLeadAndDraftReply({
@@ -200,11 +216,14 @@ export async function submitPublicLead(businessId: string, formData: FormData) {
       score: analysis.score,
       status: "new",
     })
-    .select()
+    .select("id")
     .single();
 
   if (leadError || !lead) {
-    throw new Error(leadError?.message || "Failed to submit inquiry");
+    return {
+      ok: false,
+      error: leadError?.message || "Failed to submit inquiry.",
+    };
   }
 
   const { error: msgError } = await supabase.from("messages").insert([
@@ -226,7 +245,22 @@ export async function submitPublicLead(businessId: string, formData: FormData) {
     },
   ]);
 
-  if (msgError) throw new Error(msgError.message);
+  if (msgError) {
+    return { ok: false, error: msgError.message };
+  }
 
   revalidatePath("/protected");
+
+  return {
+    ok: true,
+    replyDraft: analysis.reply_draft,
+    serviceNeeded: analysis.service_needed,
+  };
+}
+
+export async function submitPublicLead(businessId: string, formData: FormData) {
+  const result = await submitPublicLeadAction(businessId, null, formData);
+  if (!result.ok) {
+    throw new Error(result.error || "Failed to submit inquiry");
+  }
 }

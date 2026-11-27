@@ -12,7 +12,19 @@ export interface LeadAnalysis {
   reply_draft: string;
 }
 
-const MODELS = ["gemini-3.8-flash", "gemini-3.5-flash-lite"];
+// Lightweight flash-lite first for fast scoring/replies, with flash fallback
+const MODELS = ["gemini-3.5-flash-lite", "gemini-3.8-flash"] as const;
+
+const FALLBACK_ANALYSIS: LeadAnalysis = {
+  service_needed: "General inquiry",
+  location: null,
+  urgency: "normal",
+  preferred_time: null,
+  budget: null,
+  score: 50,
+  reply_draft:
+    "Thanks for reaching out! We've received your inquiry and will get back to you shortly.",
+};
 
 export async function analyzeLeadAndDraftReply(params: {
   businessName: string;
@@ -21,21 +33,18 @@ export async function analyzeLeadAndDraftReply(params: {
   leadName?: string | null;
   message: string;
 }): Promise<LeadAnalysis> {
-  const prompt = `You are LeadPilot, an AI lead assistant for "${params.businessName}" (${params.industry || "general business"}).
-Tone: ${params.tone || "friendly and professional"}.
+  const businessName = params.businessName.trim();
+  const industry = params.industry?.trim() || "general business";
+  const tone = params.tone?.trim() || "friendly and professional";
+  const leadName = params.leadName?.trim() || "Customer";
+  const message = params.message.trim();
 
-Analyze this incoming customer inquiry and draft a helpful reply:
-Customer Name: ${params.leadName || "Customer"}
-Inquiry: ${params.message}
+  const systemInstruction = `You are LeadPilot's fast lead triage assistant for "${businessName}" (${industry}).
+Match a ${tone} tone. Keep reply_draft concise (2-4 sentences), clear, and ready to send.
+Extract accurate details only when present; use null when missing.`;
 
-Return JSON with:
-- service_needed: concise summary of what they want
-- location: city/area if mentioned, else null
-- urgency: one of "low", "normal", "high", "urgent"
-- preferred_time: timing/schedule if mentioned, else null
-- budget: budget/price range if mentioned, else null
-- score: integer 1 to 100 indicating lead intent/conversion likelihood
-- reply_draft: a clear, natural reply ready to review and send`;
+  const prompt = `Customer: ${leadName}
+Inquiry: ${message}`;
 
   let lastError: unknown;
 
@@ -45,6 +54,9 @@ Return JSON with:
         model,
         contents: prompt,
         config: {
+          systemInstruction,
+          temperature: 0.3,
+          maxOutputTokens: 400,
           responseMimeType: "application/json",
           responseSchema: {
             type: Type.OBJECT,
@@ -70,11 +82,25 @@ Return JSON with:
         throw new Error("Empty response from Gemini");
       }
 
-      return JSON.parse(text) as LeadAnalysis;
+      const parsed = JSON.parse(text) as Partial<LeadAnalysis>;
+
+      return {
+        service_needed: parsed.service_needed || FALLBACK_ANALYSIS.service_needed,
+        location: parsed.location ?? null,
+        urgency: parsed.urgency ?? "normal",
+        preferred_time: parsed.preferred_time ?? null,
+        budget: parsed.budget ?? null,
+        score:
+          typeof parsed.score === "number"
+            ? Math.max(1, Math.min(100, Math.round(parsed.score)))
+            : 50,
+        reply_draft: parsed.reply_draft || FALLBACK_ANALYSIS.reply_draft,
+      };
     } catch (err) {
       lastError = err;
     }
   }
 
-  throw lastError;
+  console.error("LeadPilot Gemini analysis failed across models:", lastError);
+  return FALLBACK_ANALYSIS;
 }
