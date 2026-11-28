@@ -11,24 +11,39 @@ interface ChatMsg {
   text: string;
 }
 
-const PRESET_META: Record<PresetKey, { label: string; header: string; starterBot: string; samplePrompts: string[] }> = {
+const PRESET_META: Record<
+  PresetKey,
+  { label: string; header: string; starterBot: string; samplePrompts: string[] }
+> = {
   clinic: {
     label: "Clinic & Healthcare",
     header: "CareWell Clinic • Online",
-    starterBot: "Hi! Welcome to CareWell Dental & Skin Clinic. Ask about timings, fees, or booking an appointment.",
-    samplePrompts: ["What are your timings and checkup fee?", "I need a root canal slot tomorrow evening"],
+    starterBot:
+      "Hi! Welcome to CareWell Dental & Skin Clinic. Ask about timings, fees, or booking an appointment.",
+    samplePrompts: [
+      "What are your timings and checkup fee?",
+      "I need a root canal slot tomorrow evening",
+    ],
   },
   exports: {
     label: "Exports & B2B",
     header: "Surya Exports • Online",
-    starterBot: "Hello! Welcome to Surya Exports and Imports. Share the product, quantity, or destination you're looking for.",
-    samplePrompts: ["Do you handle bulk export inquiries?", "Need CIF pricing for 5 tons"],
+    starterBot:
+      "Hello! Welcome to Surya Exports and Imports. Share the product, quantity, or destination you're looking for.",
+    samplePrompts: [
+      "Do you handle bulk export inquiries?",
+      "Need CIF pricing for 5 tons",
+    ],
   },
   salon: {
     label: "Salon & Local Service",
     header: "Aura Salon • Online",
-    starterBot: "Hey there! Welcome to Aura Salon. Ask about hair, skin, or booking a slot this week.",
-    samplePrompts: ["Do you have slots on Saturday?", "How much is a haircut and cleanup?"],
+    starterBot:
+      "Hey there! Welcome to Aura Salon. Ask about hair, skin, or booking a slot this week.",
+    samplePrompts: [
+      "Do you have slots on Saturday?",
+      "How much is a haircut and cleanup?",
+    ],
   },
 };
 
@@ -39,9 +54,13 @@ const PLANS = [
     desc: "For solo clinics & small local businesses starting with AI replies.",
     replies: "1,500 AI replies / month",
     monthly: 1499,
-    sixMonthTotal: 7499, // ~₹1,250/mo
-    twelveMonthTotal: 11999, // ₹1,000/mo
-    features: ["Instant 24/7 Gemini AI replies", "Lead capture table in dashboard", "Custom business FAQs & hours"],
+    sixMonthTotal: 7499,
+    twelveMonthTotal: 11999,
+    features: [
+      "Instant 24/7 Gemini AI replies",
+      "Lead capture table in dashboard",
+      "Custom business FAQs & hours",
+    ],
   },
   {
     id: "growth",
@@ -49,10 +68,14 @@ const PLANS = [
     desc: "For busy clinics, exporters & multi-staff teams capturing daily leads.",
     replies: "5,000 AI replies / month",
     monthly: 2999,
-    sixMonthTotal: 14999, // ~₹2,500/mo
-    twelveMonthTotal: 23999, // ₹2,000/mo
+    sixMonthTotal: 14999,
+    twelveMonthTotal: 23999,
     popular: true,
-    features: ["Everything in Starter", "Custom industry persona & qualification flow", "Priority webhook & lead export"],
+    features: [
+      "Everything in Starter",
+      "Custom industry persona & qualification flow",
+      "Priority webhook & lead export",
+    ],
   },
   {
     id: "pro",
@@ -60,9 +83,13 @@ const PLANS = [
     desc: "For high-volume businesses or multi-branch setups.",
     replies: "15,000 AI replies / month",
     monthly: 5999,
-    sixMonthTotal: 29999, // ~₹5,000/mo
-    twelveMonthTotal: 47999, // ₹4,000/mo
-    features: ["Everything in Growth", "Higher monthly AI reply quota", "Dedicated onboarding support"],
+    sixMonthTotal: 29999,
+    twelveMonthTotal: 47999,
+    features: [
+      "Everything in Growth",
+      "Higher monthly AI reply quota",
+      "Dedicated onboarding support",
+    ],
   },
 ];
 
@@ -97,17 +124,25 @@ export default function HomePage() {
       const data = await res.json();
       setMessages((prev) => [
         ...prev,
-        { sender: "bot", text: data.reply || "Thanks! Please share your name and preferred time." },
+        {
+          sender: "bot",
+          text: data.reply || "Thanks! Please share your name and preferred time.",
+        },
       ]);
     } catch {
-      setMessages((prev) => [...prev, { sender: "bot", text: "Demo is busy right now—try again in a moment." }]);
+      setMessages((prev) => [
+        ...prev,
+        { sender: "bot", text: "Demo is busy right now—try again in a moment." },
+      ]);
     } finally {
       setLoading(false);
     }
   };
 
   const getPriceLabel = (plan: (typeof PLANS)[number]) => {
-    if (billing === "1m") return { main: `₹${plan.monthly.toLocaleString("en-IN")}`, sub: "per month" };
+    if (billing === "1m") {
+      return { main: `₹${plan.monthly.toLocaleString("en-IN")}`, sub: "per month" };
+    }
     if (billing === "6m") {
       return {
         main: `₹${plan.sixMonthTotal.toLocaleString("en-IN")}`,
@@ -122,26 +157,36 @@ export default function HomePage() {
 
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100">
-      {/* Navbar */}
       <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between max-w-6xl mx-auto">
-        <span className="text-xl font-bold tracking-tight text-emerald-400">LeadPilot</span>
+        <span className="text-xl font-bold tracking-tight text-emerald-400">
+          LeadPilot
+        </span>
         <nav className="flex items-center gap-6 text-sm text-slate-300">
-          <a href="#demo" className="hover:text-white">Live Demo</a>
-          <a href="#pricing" className="hover:text-white">Pricing</a>
-          <Link href="/dashboard" className="rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400">
+          <a href="#demo" className="hover:text-white">
+            Live Demo
+          </a>
+          <a href="#pricing" className="hover:text-white">
+            Pricing
+          </a>
+          <Link
+            href="/auth/login"
+            className="rounded-lg bg-emerald-500 px-4 py-2 font-medium text-slate-950 hover:bg-emerald-400"
+          >
             Client Login
           </Link>
         </nav>
       </header>
 
-      {/* Hero + Interactive Demo */}
-      <section id="demo" className="max-w-6xl mx-auto px-6 py-14 grid lg:grid-cols-2 gap-10 items-center">
+      <section
+        id="demo"
+        className="max-w-6xl mx-auto px-6 py-14 grid lg:grid-cols-2 gap-10 items-center"
+      >
         <div>
           <span className="inline-block rounded-full bg-emerald-500/10 border border-emerald-500/30 px-3 py-1 text-xs font-medium text-emerald-300 mb-4">
-            WhatsApp AI Receptionist & Lead Bot
+            WhatsApp AI Receptionist &amp; Lead Bot
           </span>
           <h1 className="text-4xl sm:text-5xl font-bold leading-tight">
-            Turn WhatsApp chats into booked appointments & qualified leads 24/7.
+            Turn WhatsApp chats into booked appointments &amp; qualified leads 24/7.
           </h1>
           <p className="mt-4 text-slate-300 text-base leading-relaxed">
             Built for clinics, exporters, and service businesses. Test how LeadPilot replies right now, pick a 1-month, 6-month, or 12-month plan, and connect your business WhatsApp number.
@@ -176,7 +221,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Chat Simulator Card */}
         <div className="rounded-2xl border border-slate-800 bg-slate-900 overflow-hidden shadow-xl">
           <div className="bg-emerald-700 px-4 py-3 font-semibold text-white text-sm">
             {PRESET_META[preset].header}
@@ -194,7 +238,9 @@ export default function HomePage() {
                 {m.text}
               </div>
             ))}
-            {loading && <div className="text-xs text-slate-400">Bot is typing...</div>}
+            {loading && (
+              <div className="text-xs text-slate-400">Bot is typing...</div>
+            )}
           </div>
           <form
             onSubmit={(e) => {
@@ -220,12 +266,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Pricing Section */}
-      <section id="pricing" className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-900">
+      <section
+        id="pricing"
+        className="max-w-6xl mx-auto px-6 py-16 border-t border-slate-900"
+      >
         <div className="text-center max-w-2xl mx-auto">
           <h2 className="text-3xl font-bold">Simple Plans for Any Growth Stage</h2>
           <p className="text-slate-400 mt-2 text-sm">
-            Pay LeadPilot for the AI bot & dashboard. Meta&apos;s first 1,000 service replies/month are free on your WhatsApp account, with 0% markup from us on any extra Meta messaging charges.
+            Pay LeadPilot for the AI bot &amp; dashboard. Meta&apos;s first 1,000 service replies/month are free on your WhatsApp account, with 0% markup from us on any extra Meta messaging charges.
           </p>
 
           <div className="inline-flex rounded-xl bg-slate-900 p-1 border border-slate-800 mt-6">
@@ -238,7 +286,9 @@ export default function HomePage() {
                 key={tab.id}
                 onClick={() => setBilling(tab.id as BillingCycle)}
                 className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition ${
-                  billing === tab.id ? "bg-emerald-500 text-slate-950" : "text-slate-300 hover:text-white"
+                  billing === tab.id
+                    ? "bg-emerald-500 text-slate-950"
+                    : "text-slate-300 hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -254,7 +304,9 @@ export default function HomePage() {
               <div
                 key={plan.id}
                 className={`rounded-2xl p-6 border flex flex-col justify-between ${
-                  plan.popular ? "bg-slate-900 border-emerald-500" : "bg-slate-900/60 border-slate-800"
+                  plan.popular
+                    ? "bg-slate-900 border-emerald-500"
+                    : "bg-slate-900/60 border-slate-800"
                 }`}
               >
                 <div>
@@ -266,10 +318,16 @@ export default function HomePage() {
                   <h3 className="text-xl font-bold mt-1">{plan.name}</h3>
                   <p className="text-xs text-slate-400 mt-1">{plan.desc}</p>
                   <div className="mt-5">
-                    <span className="text-3xl font-bold text-white">{price.main}</span>
-                    <span className="block text-xs text-slate-400 mt-1">{price.sub}</span>
+                    <span className="text-3xl font-bold text-white">
+                      {price.main}
+                    </span>
+                    <span className="block text-xs text-slate-400 mt-1">
+                      {price.sub}
+                    </span>
                   </div>
-                  <p className="mt-4 text-sm font-medium text-emerald-300">{plan.replies}</p>
+                  <p className="mt-4 text-sm font-medium text-emerald-300">
+                    {plan.replies}
+                  </p>
                   <ul className="mt-4 space-y-2 text-sm text-slate-300">
                     {plan.features.map((f) => (
                       <li key={f}>• {f}</li>
@@ -278,7 +336,7 @@ export default function HomePage() {
                 </div>
 
                 <Link
-                  href={`/dashboard?plan=${plan.id}&billing=${billing}`}
+                  href={`/auth/login?plan=${plan.id}&billing=${billing}`}
                   className="mt-6 block text-center rounded-lg bg-emerald-500 py-2.5 text-sm font-semibold text-slate-950 hover:bg-emerald-400"
                 >
                   Choose {plan.name}
@@ -289,12 +347,15 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="border-t border-slate-900 px-6 py-8 max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
         <span>© {new Date().getFullYear()} LeadPilot. All rights reserved.</span>
         <div className="flex gap-6">
-          <Link href="/privacy-policy" className="hover:text-white">Privacy Policy</Link>
-          <Link href="/terms" className="hover:text-white">Terms & Conditions</Link>
+          <Link href="/privacy-policy" className="hover:text-white">
+            Privacy Policy
+          </Link>
+          <Link href="/terms" className="hover:text-white">
+            Terms &amp; Conditions
+          </Link>
         </div>
       </footer>
     </main>
