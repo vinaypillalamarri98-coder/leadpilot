@@ -219,36 +219,44 @@ export default function LeadPilotLandingPage() {
           </div>
         </div>
   </section>
-        <nav className="flex flex-wrap items-center gap-6 text-[#D2D6DC]">
-          <a href="#bot-in-action" className="transition hover:text-white">
-            Bot in action
+        <header className="sticky top-0 z-30 border-b border-white/10 bg-[#090D16]/85 backdrop-blur-md">
+        <div className="mx-auto grid max-w-6xl grid-cols-3 items-center px-6 py-4">
+          {/* Left: Brand */}
+          <a href="#" className="flex items-center gap-2.5 justify-self-start">
+            <span className="h-2.5 w-2.5 rounded-full bg-blue-500" />
+            <span className="text-base font-bold tracking-tight text-white">
+              LeadPilot
+            </span>
           </a>
-          <a href="#vs-generic" className="transition hover:text-white">
-            Why LeadPilot
-          </a>
-          <a href="#pricing" className="transition hover:text-white">
-            Pricing &amp; terms
-          </a>
-          <Link
-            href="/protected"
-            className="rounded bg-[#E85D4A] px-4 py-2 font-medium text-white transition hover:bg-[#d64e3b]"
-          >
-            Open workspace →
-          </Link>
-        </nav>
-      {/* Editorial Split Hero */}
-      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-14 md:grid-cols-12 md:py-20">
-        <div className="space-y-6 md:col-span-6">
-          <div className="inline-block rounded bg-[#E85D4A]/15 px-3 py-1 text-xs font-medium tracking-wide text-[#F28B7C]">
+
+          {/* Center: Navigation Links */}
+          <nav className="hidden items-center justify-center gap-8 text-sm font-medium text-slate-300 md:flex">
+            <a href="#bot-in-action" className="transition hover:text-white">
+              Bot in action
+            </a>
+            <a href="#vs-generic" className="transition hover:text-white">
+              Why LeadPilot
+            </a>
+            <a href="#pricing" className="transition hover:text-white">
+              Pricing &amp; terms
+            </a>
+          </nav>
+        </div>
+      </header>
+
+         {/* Executive Value Section */}
+      <section className="mx-auto grid max-w-6xl items-center gap-10 border-b border-white/10 px-6 py-16 md:grid-cols-12 md:py-24">
+        <div className="space-y-6 md:col-span-7">
+          <div className="inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-3.5 py-1 text-xs font-medium tracking-wide text-blue-300">
             Built for Indian clinics, exporters &amp; studios
           </div>
 
-          <h1 className="font-serif text-4xl leading-[1.08] font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
-            Stop losing leads to{' '}
-            <span className="text-[#E85D4A]">slow &amp; robotic</span> replies.
-          </h1>
+          <h2 className="text-4xl leading-[1.1] font-bold tracking-tight text-white sm:text-5xl">
+            Stop losing leads to{" "}
+            <span className="text-blue-400">slow &amp; robotic</span> replies.
+          </h2>
 
-          <p className="max-w-lg text-base leading-relaxed text-[#CFD4DA] sm:text-lg">
+          <p className="max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
             LeadPilot reads incoming customer messages, spots real budget, urgency,
             and service needs, and drafts sharp replies—so your team focuses on
             buyers ready to close.
@@ -257,121 +265,51 @@ export default function LeadPilotLandingPage() {
           <div className="flex flex-wrap items-center gap-4 pt-2">
             <a
               href="#pricing"
-              className="inline-flex items-center gap-2 rounded bg-[#E85D4A] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#d64e3b]"
+              className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-6 py-3 text-sm font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-500"
             >
               See plans &amp; start <span>→</span>
             </a>
             <a
               href="#bot-in-action"
-              className="inline-flex items-center gap-2 rounded border border-white/20 px-5 py-3.5 text-sm font-medium text-[#E5E8EC] transition hover:border-white/40 hover:bg-white/5"
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-700 bg-[#111827] px-5 py-3 text-sm font-medium text-slate-200 transition hover:border-slate-500 hover:bg-slate-800"
             >
               Watch live preview
             </a>
           </div>
         </div>
 
-        {/* Custom Flat Editorial Illustration (Animated) */}
-        <div className="md:col-span-6">
-          <div className="relative rounded-2xl border border-white/10 bg-[#2C3034] p-5 shadow-2xl">
-            <svg
-              viewBox="0 0 520 360"
-              className="h-auto w-full"
-              role="img"
-              aria-label="Illustration of LeadPilot qualifying customer leads automatically"
-            >
-              {/* Soft organic background shape */}
-              <path
-                d="M95 72 C175 24, 345 20, 425 78 C495 130, 495 250, 420 302 C335 358, 165 352, 88 294 C22 245, 25 118, 95 72 Z"
-                fill="#3B4046"
-              />
+        {/* Clean B2B Workflow Card (No Cartoon / No Animation) */}
+        <div className="md:col-span-5">
+          <div className="space-y-4 rounded-2xl border border-white/10 bg-[#111827] p-6 shadow-xl">
+            <p className="text-xs font-semibold uppercase tracking-wider text-blue-400">
+              How LeadPilot Qualifies
+            </p>
 
-              {/* Floating coral accent circle */}
-              <circle cx="422" cy="66" r="18" fill="#E85D4A">
-                <animate
-                  attributeName="cy"
-                  values="66;58;66"
-                  dur="3.4s"
-                  repeatCount="indefinite"
-                />
-              </circle>
+            <div className="space-y-3">
+              <div className="rounded-xl border border-white/10 bg-[#090D16] p-4">
+                <p className="text-sm font-semibold text-white">1. Instant Intent Check</p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                  Flags budget signals, timeline urgency, and exact service requirements from every inquiry.
+                </p>
+              </div>
 
-              {/* Desk surface */}
-              <rect x="74" y="252" width="372" height="14" rx="7" fill="#F2B84B" />
-              <rect x="108" y="266" width="12" height="66" rx="4" fill="#232629" />
-              <rect x="400" y="266" width="12" height="66" rx="4" fill="#232629" />
+              <div className="rounded-xl border border-white/10 bg-[#090D16] p-4">
+                <p className="text-sm font-semibold text-white">2. Context-Aware Drafts</p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                  Prepares clear, natural responses tailored to your business—without generic scripts.
+                </p>
+              </div>
 
-              {/* Laptop on desk */}
-              <rect x="150" y="188" width="136" height="64" rx="8" fill="#1E2124" />
-              <rect x="158" y="196" width="120" height="48" rx="4" fill="#4B7BEC" />
-              {/* Animated chat bars on screen */}
-              <rect x="168" y="206" width="66" height="8" rx="4" fill="#FFFFFF" opacity="0.9">
-                <animate
-                  attributeName="width"
-                  values="42;78;66"
-                  dur="3s"
-                  repeatCount="indefinite"
-                />
-              </rect>
-              <rect x="196" y="220" width="70" height="8" rx="4" fill="#FFD166">
-                <animate
-                  attributeName="width"
-                  values="74;46;70"
-                  dur="3s"
-                  repeatCount="indefinite"
-                />
-              </rect>
-
-              {/* Lead qualification card floating above desk */}
-              <g>
-                <animateTransform
-                  attributeName="transform"
-                  type="translate"
-                  values="0 0; 0 -6; 0 0"
-                  dur="3.6s"
-                  repeatCount="indefinite"
-                />
-                <rect
-                  x="306"
-                  y="98"
-                  width="156"
-                  height="104"
-                  rx="12"
-                  fill="#232629"
-                  stroke="#E85D4A"
-                  strokeWidth="2"
-                />
-                <circle cx="326" cy="120" r="6" fill="#4ADE80" />
-                <rect x="340" y="115" width="96" height="9" rx="4" fill="#F4F2EE" />
-                <rect x="322" y="138" width="122" height="8" rx="4" fill="#9CA3AF" />
-                <rect x="322" y="154" width="88" height="8" rx="4" fill="#9CA3AF" />
-                <rect x="322" y="172" width="76" height="18" rx="9" fill="#E85D4A" />
-              </g>
-
-              {/* Stylized person at desk */}
-              <circle cx="195" cy="118" r="24" fill="#F3C6A5" />
-              <path
-                d="M170 112 C172 88, 218 86, 220 114 C212 104, 182 104, 170 112 Z"
-                fill="#232629"
-              />
-              <path
-                d="M162 188 C164 156, 226 156, 228 188 Z"
-                fill="#E85D4A"
-              />
-              {/* Arm typing */}
-              <path
-                d="M174 174 L148 214 L172 222"
-                fill="none"
-                stroke="#F3C6A5"
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+              <div className="rounded-xl border border-white/10 bg-[#090D16] p-4">
+                <p className="text-sm font-semibold text-white">3. Priority Handoff</p>
+                <p className="mt-1 text-xs leading-relaxed text-slate-400">
+                  Surfaces high-intent buyers first so your team closes faster.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
-
-      {/* Live Bot in Action Showcase */}
       <section
         id="bot-in-action"
         className="mx-auto max-w-6xl border-t border-white/10 px-6 py-16"
@@ -381,7 +319,7 @@ export default function LeadPilotLandingPage() {
             <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
               Live Bot Preview
             </p>
-            <h2 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
+            <h2 className="mt-1  text-3xl font-bold text-white sm:text-4xl">
               See how LeadPilot qualifies a lead in seconds
             </h2>
           </div>
@@ -511,7 +449,7 @@ export default function LeadPilotLandingPage() {
           <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
             Difference from Generic Bots
           </p>
-          <h2 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
+          <h2 className="mt-1  text-3xl font-bold text-white sm:text-4xl">
             Not a rigid menu bot. Built for real buying intent.
           </h2>
         </div>
@@ -568,7 +506,7 @@ export default function LeadPilotLandingPage() {
             <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
               Pricing &amp; Terms
             </p>
-            <h2 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
+            <h2 className="mt-1  text-3xl font-bold text-white sm:text-4xl">
               Simple monthly reply quotas, zero guesswork
             </h2>
           </div>
@@ -610,7 +548,7 @@ export default function LeadPilotLandingPage() {
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-serif text-2xl font-bold text-white">
+                  <h3 className=" text-2xl font-bold text-white">
                     {plan.name}
                   </h3>
                   {plan.featured && (
@@ -674,12 +612,10 @@ export default function LeadPilotLandingPage() {
               • <strong>Billing Cycle &amp; Activation:</strong> Selecting a plan
               carries your chosen tier and billing period (`1m`, `6m`, or `12m`)
               into `/protected` for setup and activation.
-            </li>
+    </li>
           </ul>
         </div>
-      </section> 
+      </section>
     </div>
   );
 }
-
-
