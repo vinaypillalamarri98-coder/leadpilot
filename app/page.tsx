@@ -1,892 +1,631 @@
-"use client";
-import React, { useState, useEffect, useCallback, useMemo } from "react"; import { Bot, Sparkles, CheckCircle2, XCircle, Play, Pause, RotateCcw, Send, ShieldCheck, Zap, MessageSquare, Sliders, TrendingUp, Clock, IndianRupee, MapPin, ArrowRight, Layers, Award, HelpCircle, Package, } from "lucide-react";
-type BillingCycle = "1m" | "6m" | "12m"; type PlanTier = "starter" | "growth" | "pro"; type ScenarioKey = "clinic" | "exports" | "salon";
-interface ExtractedLeadData { serviceNeeded: string; budgetOrQuantity: string; urgency: "High" | "Medium" | "Low"; preferredTime: string; location: string; leadScore: number; }
-interface ScenarioPreset { key: ScenarioKey; label: string; businessName: string; industry: string; tone: string; knowledgeBaseSummary: string; sampleInquiries: string[]; extracted: ExtractedLeadData; draftReply: string; }
-interface PricingPlanConfig { tier: PlanTier; name: string; tagline: string; monthlyQuota: number; quotaLabel: string; monthlyPriceInr: Record<BillingCycle, number>; popular?: boolean; highlights: string[]; }
-const SCENARIO_PRESETS: Record<ScenarioKey, ScenarioPreset> = { clinic: { key: "clinic", label: "Dental & Skin Clinic", businessName: "CareWell Dental & Skin Clinic", industry: "Healthcare • Dental & Dermatology", tone: "Warm, reassuring & clinical", knowledgeBaseSummary: "Mon–Sat 10 AM – 8 PM (Sun closed) • Checkup & cleaning ₹600 • Root Canal from ₹4,500 • Skin consult ₹500", sampleInquiries: [ "Hi, I have sharp tooth pain on my lower left side since yesterday and want a checkup + RCT estimate around ₹5,000. Can I come tomorrow evening around 6 PM?", "Hello doctor, looking for skin consultation and pigmentation check around ₹1,500 budget. Any slot this Friday afternoon?", "Need urgent scaling & polishing before a family wedding next week, budget around ₹1,200.", ], extracted: { serviceNeeded: "Dental Checkup & Root Canal (RCT)", budgetOrQuantity: "₹5,000 budget • 1 patient", urgency: "High", preferredTime: "Tomorrow, ~6:00 PM", location: "Local Clinic Catchment", leadScore: 93, }, draftReply: "Namaste! We are sorry to hear about your tooth pain and can prioritize you right away. Routine checkup & cleaning is ₹600, and Root Canal Treatment starts from ₹4,500 after clinical evaluation. We have an opening tomorrow around 6:00 PM at CareWell Dental & Skin Clinic—would you like us to reserve that slot for you?", }, exports: { key: "exports", label: "Exports & Traders", businessName: "Surya Exports & Imports", industry: "B2B Trade • Packaging & Agro-Exports", tone: "Sharp, commercial & responsive", knowledgeBaseSummary: "Spices, agro-commodities & export-grade packaging • Quotes tailored to SKU, MOQ & FOB/CIF port terms", sampleInquiries: [ "Hello team, we need 500 cartons of export-grade corrugated packaging & turmeric quote to Nhava Sheva / Dubai CIF next week. Budget around ₹3.5L.", "Looking for wholesale rate and MOQ for 2,000 kg cumin seeds delivered to Mumbai warehouse by next Tuesday.", "Can you share CIF pricing for 250 cartons of packaging material for shipment this month?", ], extracted: { serviceNeeded: "500 Cartons Export Packaging + Turmeric", budgetOrQuantity: "500 cartons • ~₹3,50,000", urgency: "High", preferredTime: "Next Week Dispatch", location: "Nhava Sheva / Dubai (CIF)", leadScore: 96, }, draftReply: "Hello! Thank you for contacting Surya Exports & Imports. For 500 export-grade cartons and commodity dispatch next week, we can prepare a tailored CIF quote based on exact specs, MOQ, and destination port. Could you share your required dimensions/HSN details and target dispatch date so our team can send a quote quickly?", }, salon: { key: "salon", label: "Salons & Academies", businessName: "Aura Salon & Academy", industry: "Beauty, Grooming & Bridal Studio", tone: "Polite, stylish & helpful", knowledgeBaseSummary: "Tue–Sun 10:30 AM – 8:30 PM (Closed Mon) • Haircut & styling from ₹499 • Facial from ₹1,200 • Bridal custom", sampleInquiries: [ "Hey! Looking for a party makeup + hair styling combo for a wedding function this Saturday morning around 11 AM, budget around ₹4,500.", "Hi, what is the price for a haircut and cleanup for 2 people this Sunday around 4 PM?", "Need bridal makeup trial booking next week, budget around ₹8,000.", ], extracted: { serviceNeeded: "Party Makeup + Hair Styling Combo", budgetOrQuantity: "₹4,500 budget • 1 booking", urgency: "Medium", preferredTime: "Saturday, ~11:00 AM", location: "Studio Appointment", leadScore: 87, }, draftReply: "Hi there! We would love to get you ready for Saturday's wedding function at Aura Salon & Academy. Our studio opens at 10:30 AM, and we can tailor a party makeup and hair styling look around your ₹4,500 budget. Shall we block the 11:00 AM slot this Saturday for you?", }, };
-const PRICING_PLANS: PricingPlanConfig[] = [ { tier: "starter", name: "Starter", tagline: "Ideal for single-location clinics, salons & shops starting with AI lead qualification and replies.", monthlyQuota: 1500, quotaLabel: "1,500 AI replies / month", monthlyPriceInr: { "1m": 999, "6m": 849, "12m": 699, }, highlights: [ "1,500 monthly AI replies quota", "Automatic lead extraction & intent scoring", "Custom knowledge base & reply tone", "Draft replies ready for review & sending", ], }, { tier: "growth", name: "Growth", tagline: "Built for busy clinics, traders & multi-service teams handling steady daily inquiries.", monthlyQuota: 5000, quotaLabel: "5,000 AI replies / month", monthlyPriceInr: { "1m": 2499, "6m": 2099, "12m": 1749, }, popular: true, highlights: [ "5,000 monthly AI replies quota", "Priority lead qualification & scoring", "Detailed pricing, timings & SOP grounding", "Live quota counter & lead pipeline tracking", ], }, { tier: "pro", name: "Pro", tagline: "High-volume capacity for exporters, multi-branch operators & high-inquiry businesses.", monthlyQuota: 15000, quotaLabel: "15,000 AI replies / month", monthlyPriceInr: { "1m": 5499, "6m": 4599, "12m": 3899, }, highlights: [ "15,000 monthly AI replies quota", "High-velocity lead scoring & qualification", "Rich multi-service & catalog knowledge base", "Built for scaling multi-inquiry teams", ], }, ];
-function buildCustomLeadSimulation( preset: ScenarioPreset, inquiryText: string ): { extracted: ExtractedLeadData; draftReply: string } { try { const trimmed = inquiryText.trim(); const lower = trimmed.toLowerCase();
-const isUrgent = [
-  "urgent",
-  "pain",
-  "today",
-  "tomorrow",
-  "asap",
-  "emergency",
-  "immediately",
-  "this week",
-].some((word) => lower.includes(word));
+'use client';
 
-const budgetQtyMatch = trimmed.match(
-  /(?:₹|rs\.?|inr)\s*[\d,]+(?:\s*(?:k|l|lac|lakh))?|\b\d[\d,]*\s*(?:kg|cartons?|units?|pcs|pieces|people|slots?)\b/i
-);
-const detectedBudgetOrQty = budgetQtyMatch
-  ? budgetQtyMatch[0].replace(/\s+/g, " ")
-  : preset.extracted.budgetOrQuantity;
+import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 
-const timeMatch = trimmed.match(
-  /\b(?:today|tomorrow|monday|tuesday|wednesday|thursday|friday|saturday|sunday|next week|morning|afternoon|evening|\d{1,2}(?::\d{2})?\s*(?:am|pm))\b/i
-);
-const detectedTime = timeMatch ? timeMatch[0] : "Flexible / To Confirm";
+type BillingCycle = '1m' | '6m' | '12m';
+type PlanTier = 'starter' | 'growth' | 'pro';
 
-const computedScore = Math.min(
-  98,
-  Math.max(74, 80 + (isUrgent ? 9 : 2) + (budgetQtyMatch ? 6 : 0))
-);
-
-const shortSummary =
-  trimmed.length > 56 ? `${trimmed.slice(0, 56).trim()}...` : trimmed;
-
-return {
+interface LeadScenario {
+  id: string;
+  businessType: string;
+  channel: string;
+  incomingMessage: string;
   extracted: {
-    serviceNeeded: shortSummary || preset.extracted.serviceNeeded,
-    budgetOrQuantity: detectedBudgetOrQty,
-    urgency: isUrgent ? "High" : "Medium",
-    preferredTime: detectedTime,
-    location: preset.extracted.location,
-    leadScore: computedScore,
+    need: string;
+    budget: string;
+    urgency: string;
+    score: string;
+  };
+  botReply: string;
+}
+
+const SCENARIOS: LeadScenario[] = [
+  {
+    id: 'clinic',
+    businessType: 'Dental & Skin Clinic · Hyderabad',
+    channel: 'WhatsApp',
+    incomingMessage:
+      'Hi, need root canal + aligner consultation this week for my brother. Approx budget 45k. What slots are open?',
+    extracted: {
+      need: 'RCT + Clear Aligners',
+      budget: '₹45,000',
+      urgency: 'High (This Week)',
+      score: '94 / 100 · Hot Lead',
+    },
+    botReply:
+      'Namaste! We have aligner & RCT slots open Thursday at 11:30 AM and Friday at 4:00 PM. Aligners start around ₹42,000–₹65,000 depending on case complexity. Should I lock one of these slots for your brother?',
   },
-  draftReply: `Thank you for reaching out to ${preset.businessName}! We have noted your inquiry regarding "${shortSummary}" (${detectedBudgetOrQty}). Based on our business details (${preset.knowledgeBaseSummary}), our team can assist you—could you confirm your preferred timing (${detectedTime}) and contact details so we can follow up promptly?`,
-};
-} catch { return { extracted: preset.extracted, draftReply: preset.draftReply, }; } }
-export default function HomePage() { const [selectedScenario, setSelectedScenario] = useState<ScenarioKey>("clinic");
-const [activeInquiry, setActiveInquiry] = useState<string>(
-SCENARIO_PRESETS.clinic.sampleInquiries[0]
-);
-const [customInput, setCustomInput] = useState<string>("");
-const [isCustomMode, setIsCustomMode] = useState<boolean>(false);
-const [step, setStep] = useState<number>(3);
-const [autoRunLoop, setAutoRunLoop] = useState<boolean>(true);
-const [billingCycle, setBillingCycle] = useState<BillingCycle>("6m");
-const currentPreset = SCENARIO_PRESETS[selectedScenario];
-const simulationResult = useMemo(() => { if (isCustomMode && activeInquiry.trim().length > 0) { return buildCustomLeadSimulation(currentPreset, activeInquiry); } return { extracted: currentPreset.extracted, draftReply: currentPreset.draftReply, }; }, [isCustomMode, activeInquiry, currentPreset]);
-const handlePresetChange = (key: ScenarioKey) => { setSelectedScenario(key); setIsCustomMode(false); setCustomInput(""); setActiveInquiry(SCENARIO_PRESETS[key].sampleInquiries[0]); setStep(1); setAutoRunLoop(true); };
-const handleSampleInquiryClick = (sampleText: string) => { setIsCustomMode(false); setCustomInput(""); setActiveInquiry(sampleText); setStep(1); setAutoRunLoop(true); };
-const handleCustomSubmit = (e: React.FormEvent) => { e.preventDefault(); const cleaned = customInput.trim(); if (!cleaned) return; setActiveInquiry(cleaned); setIsCustomMode(true); setStep(1); setAutoRunLoop(true); };
-const handleReplay = useCallback(() => { setStep(1); }, []);
-useEffect(() => { if (!autoRunLoop) return; const timeoutId = setTimeout( () => { setStep((prev) => (prev < 3 ? prev + 1 : 1)); }, step === 3 ? 4000 : 1450 ); return () => clearTimeout(timeoutId); }, [autoRunLoop, step]);
-const billingCycleLabel: Record<BillingCycle, string> = { "1m": "Monthly (1m)", "6m": "Half-Yearly (6m)", "12m": "Annual (12m)", };
-const billingBadge: Record<BillingCycle, string | null> = { "1m": null, "6m": "Save ~15%", "12m": "Save ~30%", };
-return ( <div className="relative min-h-screen overflow-x-clip bg-[#070b14] text-slate-100 antialiased selection:bg-emerald-400/25 selection:text-emerald-200">
-{/* Subtle editorial ambient light & grain veil */}
-<div
-aria-hidden="true"
-className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
->
-<div className="absolute -top-40 left-1/2 h-[34rem] w-[62rem] -translate-x-1/2 rounded-full bg-emerald-500/[0.07] blur-[140px]" />
-<div className="absolute top-[38%] -right-32 h-[28rem] w-[28rem] rounded-full bg-teal-400/[0.05] blur-[130px]" />
-<div className="absolute bottom-0 -left-32 h-[26rem] w-[26rem] rounded-full bg-sky-400/[0.04] blur-[130px]" />
-</div>
-  {/* Header */}
-  <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#070b14]/75 backdrop-blur-xl">
-    <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
-      <a href="#" className="group flex items-center gap-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300 transition duration-300 group-hover:border-emerald-400/45 group-hover:bg-emerald-400/[0.14]">
-          <Bot className="h-4 w-4" />
-        </div>
-        <div className="flex items-baseline gap-2.5">
-          <span className="text-base font-semibold tracking-tight text-white sm:text-lg">
+  {
+    id: 'exporter',
+    businessType: 'Spices & Agro Exporter · Surat',
+    channel: 'Website Lead',
+    incomingMessage:
+      'Looking for 2 MT organic turmeric powder CIF Dubai next month. Need lab test & COA.',
+    extracted: {
+      need: '2 MT Organic Turmeric (CIF)',
+      budget: 'Export Bulk · High Value',
+      urgency: 'Medium (Next Month)',
+      score: '91 / 100 · Qualified Buyer',
+    },
+    botReply:
+      'Hello! We supply export-grade organic turmeric with full lab analysis and Certificate of Analysis (COA) for Gulf shipments. Can you share your target port details and preferred packaging size so we can send an exact quote?',
+  },
+  {
+    id: 'salon',
+    businessType: 'Bridal & Hair Studio · Bengaluru',
+    channel: 'Instagram DM',
+    incomingMessage:
+      'Bridal makeup + hair package for 2 dates in December, around 35k total. Available?',
+    extracted: {
+      need: '2-Day Bridal Package',
+      budget: '₹35,000',
+      urgency: 'High (December Dates)',
+      score: '89 / 100 · Ready to Book',
+    },
+    botReply:
+      'Hi there! We have artist availability for select December dates. Our ₹35,000 bridal bundle covers HD/airbrush makeup, hair styling, and trial session. Which two dates are you looking at?',
+  },
+];
+
+const PLANS: {
+  tier: PlanTier;
+  name: string;
+  quotaLabel: string;
+  summary: string;
+  prices: Record<BillingCycle, string>;
+  perks: string[];
+  featured?: boolean;
+}[] = [
+  {
+    tier: 'starter',
+    name: 'Starter',
+    quotaLabel: '1,500 AI replies / month',
+    summary: 'For solo clinics, salons & local shops qualifying daily inquiries.',
+    prices: {
+      '1m': '₹999',
+      '6m': '₹849',
+      '12m': '₹699',
+    },
+    perks: [
+      'Contextual lead qualification',
+      'Instant WhatsApp & web reply drafts',
+      'Monthly quota counter in dashboard',
+    ],
+  },
+  {
+    tier: 'growth',
+    name: 'Growth',
+    quotaLabel: '5,000 AI replies / month',
+    summary: 'For growing multi-chair studios, agencies & trade teams.',
+    prices: {
+      '1m': '₹2,499',
+      '6m': '₹2,099',
+      '12m': '₹1,799',
+    },
+    perks: [
+      'Everything in Starter',
+      'Higher volume qualification & scoring',
+      'Priority setup for custom business FAQs',
+    ],
+    featured: true,
+  },
+  {
+    tier: 'pro',
+    name: 'Pro',
+    quotaLabel: '15,000 AI replies / month',
+    summary: 'For high-volume exporters, chains & busy sales desks.',
+    prices: {
+      '1m': '₹5,999',
+      '6m': '₹4,999',
+      '12m': '₹4,299',
+    },
+    perks: [
+      'Everything in Growth',
+      'High-capacity monthly reply pool',
+      'Built for multi-inquiry peak seasons',
+    ],
+  },
+];
+
+export default function LeadPilotLandingPage() {
+  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [customInput, setCustomInput] = useState('');
+  const [autoPlay, setAutoPlay] = useState(true);
+  const [billing, setBilling] = useState<BillingCycle>('1m');
+
+  const active = SCENARIOS[selectedIndex];
+
+  useEffect(() => {
+    if (!autoPlay) return;
+    const timer = setInterval(() => {
+      setSelectedIndex((prev) => (prev + 1) % SCENARIOS.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [autoPlay]);
+
+  const handleCustomSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!customInput.trim()) return;
+    setAutoPlay(false);
+  };
+
+  const displayMessage = customInput.trim() ? customInput.trim() : active.incomingMessage;
+
+  return (
+    <div className="min-h-screen bg-[#34383C] text-[#F4F2EE] selection:bg-[#E85D4A] selection:text-white">
+      {/* Top Bar */}
+      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-5 text-sm">
+        <div className="flex items-center gap-2.5">
+          <span className="font-serif text-xl font-bold tracking-tight text-white">
             LeadPilot
           </span>
-          <span className="hidden rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-medium tracking-wide text-slate-400 sm:inline-block">
-            Lead Intelligence
-          </span>
-        </div>
-      </a>
-
-      <nav className="hidden items-center gap-8 text-[13px] font-medium text-slate-400 md:flex">
-        <a
-          href="#bot-in-action"
-          className="transition-colors duration-200 hover:text-white"
-        >
-          Bot in Action
-        </a>
-        <a
-          href="#comparison"
-          className="transition-colors duration-200 hover:text-white"
-        >
-          Comparison
-        </a>
-        <a
-          href="#pricing"
-          className="transition-colors duration-200 hover:text-white"
-        >
-          Pricing &amp; Terms
-        </a>
-      </nav>
-
-      <a
-        href={`/protected?plan=growth&billing=${billingCycle}`}
-        className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/[0.12] px-4 py-2 text-xs font-medium text-emerald-200 transition duration-200 hover:border-emerald-300/60 hover:bg-emerald-400/[0.2] hover:text-white sm:text-[13px]"
-      >
-        <span>Open Workspace</span>
-        <ArrowRight className="h-3.5 w-3.5" />
-      </a>
-    </div>
-  </header>
-
-  <main className="relative z-10">
-    {/* Hero */}
-    <section className="mx-auto max-w-6xl px-5 pt-16 pb-10 sm:px-8 lg:pt-24 lg:pb-12">
-      <div className="mx-auto max-w-3xl text-center">
-        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1.5 text-xs font-medium tracking-wide text-slate-300">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-          Crafted for Indian Clinics, Exporters, Traders &amp; Salons
+          <span className="h-2.5 w-2.5 rounded-full bg-[#E85D4A]" />
         </div>
 
-        <h1 className="text-4xl font-semibold tracking-[-0.03em] text-white sm:text-5xl lg:text-[3.5rem] lg:leading-[1.08]">
-          Qualify every inquiry.{" "}
-          <span className="bg-gradient-to-r from-emerald-200 via-teal-200 to-sky-200 bg-clip-text font-normal italic text-transparent">
-            Reply with quiet precision.
-          </span>
-        </h1>
-
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed font-normal text-slate-400 sm:text-[17px]">
-          LeadPilot structures raw customer messages into clear service
-          needs, budget or quantity, urgency, preferred timing, and a lead
-          score—drafting replies shaped by your business knowledge base and
-          voice.
-        </p>
-      </div>
-    </section>
-
-    {/* 1. AESTHETIC INTERACTIVE "BOT IN ACTION" SHOWCASE */}
-    <section
-      id="bot-in-action"
-      className="mx-auto max-w-6xl px-5 py-6 sm:px-8 lg:py-8"
-    >
-      <div className="rounded-[28px] border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-xl sm:p-8 lg:p-10">
-        <div className="flex flex-col justify-between gap-5 border-b border-white/[0.07] pb-7 lg:flex-row lg:items-end">
-          <div>
-            <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.14em] text-emerald-300/90 uppercase">
-              <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-              </span>
-              Bot in Action • Interactive Preview
-            </div>
-            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-white sm:text-3xl">
-              See a single message become a qualified lead
-            </h2>
-            <p className="mt-1.5 text-sm text-slate-400">
-              Switch business presets, click a sample inquiry, or type your
-              own message to watch each stage unfold.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={() => setAutoRunLoop((prev) => !prev)}
-              className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition duration-200 ${
-                autoRunLoop
-                  ? "border-emerald-400/35 bg-emerald-400/[0.1] text-emerald-200"
-                  : "border-white/[0.08] bg-white/[0.03] text-slate-300 hover:border-white/[0.16] hover:text-white"
-              }`}
-            >
-              {autoRunLoop ? (
-                <>
-                  <Pause className="h-3.5 w-3.5 text-emerald-300" />
-                  <span>Auto-Loop On</span>
-                </>
-              ) : (
-                <>
-                  <Play className="h-3.5 w-3.5 text-slate-300" />
-                  <span>Auto-Loop Paused</span>
-                </>
-              )}
-            </button>
-
-            <button
-              type="button"
-              onClick={handleReplay}
-              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-xs font-medium text-slate-300 transition duration-200 hover:border-white/[0.16] hover:text-white"
-            >
-              <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
-              <span>Replay</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Business Preset Selector */}
-        <div className="mt-7 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
-          {(Object.keys(SCENARIO_PRESETS) as ScenarioKey[]).map((key) => {
-            const preset = SCENARIO_PRESETS[key];
-            const active = selectedScenario === key;
-            return (
-              <button
-                key={key}
-                type="button"
-                onClick={() => handlePresetChange(key)}
-                className={`group rounded-2xl border p-4 text-left transition duration-200 ${
-                  active
-                    ? "border-emerald-400/40 bg-emerald-400/[0.07]"
-                    : "border-white/[0.06] bg-white/[0.015] hover:border-white/[0.14] hover:bg-white/[0.03]"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span
-                    className={`text-[11px] font-medium tracking-wider uppercase ${
-                      active ? "text-emerald-300" : "text-slate-400"
-                    }`}
-                  >
-                    {preset.label}
-                  </span>
-                  {active && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                  )}
-                </div>
-                <p className="mt-1.5 text-sm font-medium text-white">
-                  {preset.businessName}
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  {preset.industry}
-                </p>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Sample Inquiry Chips */}
-        <div className="mt-6">
-          <p className="mb-2.5 text-[11px] font-medium tracking-[0.12em] text-slate-400 uppercase">
-            Sample inquiries for {currentPreset.businessName}
-          </p>
-          <div className="flex flex-wrap gap-2">
-            {currentPreset.sampleInquiries.map((sample, idx) => {
-              const isCurrent = !isCustomMode && activeInquiry === sample;
-              return (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => handleSampleInquiryClick(sample)}
-                  className={`max-w-full rounded-full border px-3.5 py-2 text-left text-xs transition duration-200 ${
-                    isCurrent
-                      ? "border-emerald-400/40 bg-emerald-400/[0.1] text-emerald-100"
-                      : "border-white/[0.07] bg-white/[0.02] text-slate-300 hover:border-white/[0.15] hover:text-white"
-                  }`}
-                >
-                  <span className="text-slate-500">0{idx + 1}</span> · “
-                  {sample.length > 68
-                    ? `${sample.slice(0, 68).trim()}...`
-                    : sample}
-                  ”
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Custom Inquiry Input */}
-        <form
-          onSubmit={handleCustomSubmit}
-          className="mt-4 flex flex-col gap-2.5 sm:flex-row"
-        >
-          <div className="relative flex-1">
-            <MessageSquare className="pointer-events-none absolute top-3.5 left-4 h-4 w-4 text-slate-500" />
-            <input
-              type="text"
-              value={customInput}
-              onChange={(e) => setCustomInput(e.target.value)}
-              placeholder="Type a custom customer message (e.g., 'Need root canal estimate around ₹4,500 tomorrow evening')..."
-              className="w-full rounded-2xl border border-white/[0.08] bg-[#060911]/80 py-3 pr-4 pl-11 text-sm text-white placeholder-slate-500 transition focus:border-emerald-400/50 focus:outline-none"
-            />
-          </div>
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400/35 bg-emerald-400/[0.14] px-5 py-3 text-sm font-medium text-emerald-200 transition duration-200 hover:border-emerald-300/60 hover:bg-emerald-400/[0.22] hover:text-white"
+        <nav className="flex flex-wrap items-center gap-6 text-[#D2D6DC]">
+          <a href="#bot-in-action" className="transition hover:text-white">
+            Bot in action
+          </a>
+          <a href="#vs-generic" className="transition hover:text-white">
+            Why LeadPilot
+          </a>
+          <a href="#pricing" className="transition hover:text-white">
+            Pricing &amp; terms
+          </a>
+          <Link
+            href="/protected"
+            className="rounded bg-[#E85D4A] px-4 py-2 font-medium text-white transition hover:bg-[#d64e3b]"
           >
-            <Send className="h-3.5 w-3.5" />
-            <span>Simulate</span>
-          </button>
-        </form>
+            Open workspace →
+          </Link>
+        </nav>
+      </header>
 
-        {/* Step Selector Pills */}
-        <div className="mt-7 grid grid-cols-3 gap-2.5 sm:gap-4">
-          {[
-            {
-              num: 1,
-              title: "01 · Incoming Inquiry",
-              desc: "Raw message & business context",
-            },
-            {
-              num: 2,
-              title: "02 · Lead Qualification",
-              desc: "Fields extracted & intent scored",
-            },
-            {
-              num: 3,
-              title: "03 · Tailored Draft",
-              desc: "Grounded reply ready to send",
-            },
-          ].map((s) => {
-            const activeStep = step === s.num;
-            const doneStep = step >= s.num;
+      {/* Editorial Split Hero */}
+      <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-14 md:grid-cols-12 md:py-20">
+        <div className="space-y-6 md:col-span-6">
+          <div className="inline-block rounded bg-[#E85D4A]/15 px-3 py-1 text-xs font-medium tracking-wide text-[#F28B7C]">
+            Built for Indian clinics, exporters &amp; studios
+          </div>
+
+          <h1 className="font-serif text-4xl leading-[1.08] font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+            Stop losing leads to{' '}
+            <span className="text-[#E85D4A]">slow &amp; robotic</span> replies.
+          </h1>
+
+          <p className="max-w-lg text-base leading-relaxed text-[#CFD4DA] sm:text-lg">
+            LeadPilot reads incoming customer messages, spots real budget, urgency,
+            and service needs, and drafts sharp replies—so your team focuses on
+            buyers ready to close.
+          </p>
+
+          <div className="flex flex-wrap items-center gap-4 pt-2">
+            <a
+              href="#pricing"
+              className="inline-flex items-center gap-2 rounded bg-[#E85D4A] px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-[#d64e3b]"
+            >
+              See plans &amp; start <span>→</span>
+            </a>
+            <a
+              href="#bot-in-action"
+              className="inline-flex items-center gap-2 rounded border border-white/20 px-5 py-3.5 text-sm font-medium text-[#E5E8EC] transition hover:border-white/40 hover:bg-white/5"
+            >
+              Watch live preview
+            </a>
+          </div>
+        </div>
+
+        {/* Custom Flat Editorial Illustration (Animated) */}
+        <div className="md:col-span-6">
+          <div className="relative rounded-2xl border border-white/10 bg-[#2C3034] p-5 shadow-2xl">
+            <svg
+              viewBox="0 0 520 360"
+              className="h-auto w-full"
+              role="img"
+              aria-label="Illustration of LeadPilot qualifying customer leads automatically"
+            >
+              {/* Soft organic background shape */}
+              <path
+                d="M95 72 C175 24, 345 20, 425 78 C495 130, 495 250, 420 302 C335 358, 165 352, 88 294 C22 245, 25 118, 95 72 Z"
+                fill="#3B4046"
+              />
+
+              {/* Floating coral accent circle */}
+              <circle cx="422" cy="66" r="18" fill="#E85D4A">
+                <animate
+                  attributeName="cy"
+                  values="66;58;66"
+                  dur="3.4s"
+                  repeatCount="indefinite"
+                />
+              </circle>
+
+              {/* Desk surface */}
+              <rect x="74" y="252" width="372" height="14" rx="7" fill="#F2B84B" />
+              <rect x="108" y="266" width="12" height="66" rx="4" fill="#232629" />
+              <rect x="400" y="266" width="12" height="66" rx="4" fill="#232629" />
+
+              {/* Laptop on desk */}
+              <rect x="150" y="188" width="136" height="64" rx="8" fill="#1E2124" />
+              <rect x="158" y="196" width="120" height="48" rx="4" fill="#4B7BEC" />
+              {/* Animated chat bars on screen */}
+              <rect x="168" y="206" width="66" height="8" rx="4" fill="#FFFFFF" opacity="0.9">
+                <animate
+                  attributeName="width"
+                  values="42;78;66"
+                  dur="3s"
+                  repeatCount="indefinite"
+                />
+              </rect>
+              <rect x="196" y="220" width="70" height="8" rx="4" fill="#FFD166">
+                <animate
+                  attributeName="width"
+                  values="74;46;70"
+                  dur="3s"
+                  repeatCount="indefinite"
+                />
+              </rect>
+
+              {/* Lead qualification card floating above desk */}
+              <g>
+                <animateTransform
+                  attributeName="transform"
+                  type="translate"
+                  values="0 0; 0 -6; 0 0"
+                  dur="3.6s"
+                  repeatCount="indefinite"
+                />
+                <rect
+                  x="306"
+                  y="98"
+                  width="156"
+                  height="104"
+                  rx="12"
+                  fill="#232629"
+                  stroke="#E85D4A"
+                  strokeWidth="2"
+                />
+                <circle cx="326" cy="120" r="6" fill="#4ADE80" />
+                <rect x="340" y="115" width="96" height="9" rx="4" fill="#F4F2EE" />
+                <rect x="322" y="138" width="122" height="8" rx="4" fill="#9CA3AF" />
+                <rect x="322" y="154" width="88" height="8" rx="4" fill="#9CA3AF" />
+                <rect x="322" y="172" width="76" height="18" rx="9" fill="#E85D4A" />
+              </g>
+
+              {/* Stylized person at desk */}
+              <circle cx="195" cy="118" r="24" fill="#F3C6A5" />
+              <path
+                d="M170 112 C172 88, 218 86, 220 114 C212 104, 182 104, 170 112 Z"
+                fill="#232629"
+              />
+              <path
+                d="M162 188 C164 156, 226 156, 228 188 Z"
+                fill="#E85D4A"
+              />
+              {/* Arm typing */}
+              <path
+                d="M174 174 L148 214 L172 222"
+                fill="none"
+                stroke="#F3C6A5"
+                strokeWidth="10"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+      </section>
+
+      {/* Live Bot in Action Showcase */}
+      <section
+        id="bot-in-action"
+        className="mx-auto max-w-6xl border-t border-white/10 px-6 py-16"
+      >
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
+              Live Bot Preview
+            </p>
+            <h2 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
+              See how LeadPilot qualifies a lead in seconds
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setAutoPlay((v) => !v)}
+            className="rounded border border-white/20 bg-[#2C3034] px-4 py-2 text-xs font-medium text-[#E5E8EC] transition hover:border-[#E85D4A]"
+          >
+            {autoPlay ? 'Auto-cycle: ON (Click to pause)' : 'Auto-cycle: PAUSED (Click to play)'}
+          </button>
+        </div>
+
+        {/* Scenario Switcher */}
+        <div className="mb-6 flex flex-wrap gap-2.5">
+          {SCENARIOS.map((item, idx) => {
+            const activeTab = idx === selectedIndex && !customInput.trim();
             return (
               <button
-                key={s.num}
+                key={item.id}
                 type="button"
                 onClick={() => {
-                  setAutoRunLoop(false);
-                  setStep(s.num);
+                  setCustomInput('');
+                  setSelectedIndex(idx);
                 }}
-                className={`rounded-2xl border px-3.5 py-3 text-left transition duration-200 sm:px-4 ${
-                  activeStep
-                    ? "border-emerald-400/45 bg-emerald-400/[0.09]"
-                    : doneStep
-                      ? "border-white/[0.08] bg-white/[0.025] hover:border-white/[0.15]"
-                      : "border-white/[0.05] bg-white/[0.01] opacity-55"
+                className={`rounded-lg px-4 py-2 text-xs font-medium transition ${
+                  activeTab
+                    ? 'bg-[#E85D4A] text-white'
+                    : 'bg-[#2C3034] text-[#D2D6DC] hover:bg-[#3A3F45]'
                 }`}
               >
-                <p className="text-xs font-medium text-white sm:text-sm">
-                  {s.title}
-                </p>
-                <p className="mt-0.5 hidden text-xs text-slate-400 sm:block">
-                  {s.desc}
-                </p>
+                {item.businessType}
               </button>
             );
           })}
         </div>
 
-        {/* 3-Column Stage Cards */}
-        <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
-          {/* Stage 1 */}
-          <div
-            className={`flex flex-col justify-between rounded-2xl border p-5 transition duration-300 ${
-              step === 1
-                ? "border-white/[0.18] bg-[#090e1a]"
-                : "border-white/[0.07] bg-[#080c16]/80"
-            }`}
-          >
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] font-medium tracking-[0.12em] text-slate-300 uppercase">
-                  Incoming Message
-                </span>
-                <span className="rounded-full border border-white/[0.07] bg-white/[0.03] px-2.5 py-0.5 text-[11px] text-slate-400">
-                  {isCustomMode ? "Custom" : "Inquiry"}
-                </span>
-              </div>
-
-              <div className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4 text-sm leading-relaxed text-slate-200">
-                “{activeInquiry}”
-              </div>
-
-              <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.015] p-3.5">
-                <p className="text-[11px] font-medium tracking-wider text-slate-400 uppercase">
-                  Knowledge Base &amp; Tone
-                </p>
-                <p className="mt-1 text-xs font-medium text-emerald-200/90">
-                  {currentPreset.businessName} · {currentPreset.tone}
-                </p>
-                <p className="mt-1 text-xs leading-relaxed text-slate-400">
-                  {currentPreset.knowledgeBaseSummary}
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs text-slate-400">
-              <span>WhatsApp / Web</span>
-              <span className="text-slate-300">
-                {step >= 1 ? "Received" : "Pending"}
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Incoming Lead & Custom Tester */}
+          <div className="space-y-4 rounded-2xl border border-white/10 bg-[#2C3034] p-6 lg:col-span-5">
+            <div className="flex items-center justify-between text-xs text-[#A8B0B8]">
+              <span>Incoming Inquiry · {active.channel}</span>
+              <span className="rounded bg-white/10 px-2 py-0.5 text-[#F4F2EE]">
+                {active.businessType}
               </span>
             </div>
-          </div>
 
-          {/* Stage 2 */}
-          <div
-            className={`flex flex-col justify-between rounded-2xl border p-5 transition duration-300 ${
-              step >= 2
-                ? step === 2
-                  ? "border-emerald-400/45 bg-[#090e1a] opacity-100"
-                  : "border-white/[0.09] bg-[#080c16]/90 opacity-100"
-                : "border-white/[0.05] bg-[#080c16]/50 opacity-45"
-            }`}
-          >
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] font-medium tracking-[0.12em] text-emerald-300 uppercase">
-                  Extracted Lead
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/25 bg-emerald-400/[0.09] px-2.5 py-0.5 text-xs font-medium text-emerald-200">
-                  <TrendingUp className="h-3 w-3" />
-                  {simulationResult.extracted.leadScore}/100
-                </span>
-              </div>
-
-              <div className="mt-4 space-y-2.5">
-                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                  <p className="text-[11px] text-slate-400">
-                    Service Needed
-                  </p>
-                  <p className="mt-0.5 text-sm font-medium text-white">
-                    {simulationResult.extracted.serviceNeeded}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                    <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <Package className="h-3 w-3 text-slate-400" />
-                      Budget / Qty
-                    </p>
-                    <p className="mt-0.5 text-xs font-medium text-slate-200">
-                      {simulationResult.extracted.budgetOrQuantity}
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                    <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <Zap className="h-3 w-3 text-amber-300/80" />
-                      Urgency
-                    </p>
-                    <p className="mt-0.5 text-xs font-medium text-amber-200/90">
-                      {simulationResult.extracted.urgency}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2.5">
-                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                    <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <Clock className="h-3 w-3 text-slate-400" />
-                      Preferred Time
-                    </p>
-                    <p className="mt-0.5 text-xs font-medium text-slate-200">
-                      {simulationResult.extracted.preferredTime}
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
-                    <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <MapPin className="h-3 w-3 text-slate-400" />
-                      Location / Terms
-                    </p>
-                    <p className="mt-0.5 text-xs font-medium text-slate-200">
-                      {simulationResult.extracted.location}
-                    </p>
-                  </div>
-                </div>
-              </div>
+            <div className="rounded-xl bg-[#383D42] p-4 text-sm leading-relaxed text-[#F4F2EE]">
+              &ldquo;{displayMessage}&rdquo;
             </div>
 
-            <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs text-slate-400">
-              <span>Qualification</span>
-              <span className="text-emerald-300/90">
-                {step >= 2 ? "Structured" : "Analyzing"}
-              </span>
-            </div>
-          </div>
-
-          {/* Stage 3 */}
-          <div
-            className={`flex flex-col justify-between rounded-2xl border p-5 transition duration-300 ${
-              step >= 3
-                ? "border-emerald-400/35 bg-[#090e1a] opacity-100"
-                : "border-white/[0.05] bg-[#080c16]/50 opacity-45"
-            }`}
-          >
-            <div>
-              <div className="flex items-center justify-between gap-2">
-                <span className="text-[11px] font-medium tracking-[0.12em] text-emerald-300 uppercase">
-                  Drafted Reply
-                </span>
-                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-2.5 py-0.5 text-[11px] text-emerald-200">
-                  KB Grounded
-                </span>
-              </div>
-
-              <div className="mt-4 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.04] p-4 text-sm leading-relaxed text-slate-100">
-                {simulationResult.draftReply}
-              </div>
-
-              <div className="mt-4 space-y-2 rounded-xl border border-white/[0.06] bg-white/[0.015] p-3.5 text-xs text-slate-300">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-300" />
-                  <span>Matches {currentPreset.businessName}’s tone</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-300" />
-                  <span>Prompts next step for booking or quote</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs">
-              <span className="text-slate-400">Counts as 1 reply</span>
-              <a
-                href={`/protected?plan=growth&billing=${billingCycle}`}
-                className="font-medium text-emerald-300 transition hover:text-emerald-200"
+            <form onSubmit={handleCustomSubmit} className="space-y-2.5 pt-2">
+              <label
+                htmlFor="test-lead-input"
+                className="block text-xs font-medium text-[#CFD4DA]"
               >
-                Open in workspace →
-              </a>
+                Try your own sample customer message:
+              </label>
+              <div className="flex gap-2">
+                <input
+                  id="test-lead-input"
+                  type="text"
+                  value={customInput}
+                  onChange={(e) => setCustomInput(e.target.value)}
+                  placeholder="e.g., Need hair smoothening this Sunday, budget 8k..."
+                  className="w-full rounded-lg border border-white/15 bg-[#232629] px-3.5 py-2.5 text-xs text-white placeholder-[#8B939C] focus:border-[#E85D4A] focus:outline-none"
+                />
+                <button
+                  type="submit"
+                  className="shrink-0 rounded-lg bg-[#E85D4A] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#d64e3b]"
+                >
+                  Preview
+                </button>
+              </div>
+            </form>
+          </div>
+
+          {/* Extracted Lead Signals + Draft Reply */}
+          <div className="space-y-5 rounded-2xl border border-white/10 bg-[#2C3034] p-6 lg:col-span-7">
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="rounded-xl bg-[#232629] p-3">
+                <p className="text-[11px] text-[#9CA3AF]">Service Need</p>
+                <p className="mt-1 text-xs font-semibold text-white">
+                  {customInput.trim() ? 'Custom Inquiry' : active.extracted.need}
+                </p>
+              </div>
+              <div className="rounded-xl bg-[#232629] p-3">
+                <p className="text-[11px] text-[#9CA3AF]">Budget Signal</p>
+                <p className="mt-1 text-xs font-semibold text-[#F28B7C]">
+                  {customInput.trim() ? 'Detected in text' : active.extracted.budget}
+                </p>
+              </div>
+              <div className="rounded-xl bg-[#232629] p-3">
+                <p className="text-[11px] text-[#9CA3AF]">Urgency</p>
+                <p className="mt-1 text-xs font-semibold text-white">
+                  {customInput.trim() ? 'Flagged for review' : active.extracted.urgency}
+                </p>
+              </div>
+              <div className="rounded-xl bg-[#232629] p-3">
+                <p className="text-[11px] text-[#9CA3AF]">Lead Priority</p>
+                <p className="mt-1 text-xs font-semibold text-emerald-400">
+                  {customInput.trim() ? 'Qualified Draft' : active.extracted.score}
+                </p>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-[#E85D4A]/30 bg-[#232629] p-4">
+              <p className="text-xs font-semibold text-[#E85D4A]">
+                Drafted Reply Ready for Your Team
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-[#E5E8EC]">
+                {customInput.trim()
+                  ? `Thanks for reaching out! We have noted your request ("${customInput.trim()}") and checked availability. Share your preferred time or date and we will confirm the exact details right away.`
+                  : active.botReply}
+              </p>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    {/* 2. LEADPILOT VS. GENERIC BOTS */}
-    <section
-      id="comparison"
-      className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-20"
-    >
-      <div className="mx-auto max-w-2xl text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-xs font-medium text-slate-300">
-          <Layers className="h-3.5 w-3.5 text-emerald-300" />
-          Comparison
-        </span>
-        <h2 className="mt-4 text-2xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
-          Beyond generic auto-replies
-        </h2>
-        <p className="mt-3 text-sm leading-relaxed text-slate-400 sm:text-base">
-          Standard auto-responders greet visitors without understanding intent.
-          LeadPilot extracts key details, scores leads, and drafts replies
-          rooted in your business rules.
-        </p>
-      </div>
-
-      <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <div className="rounded-[24px] border border-white/[0.06] bg-white/[0.015] p-6 sm:p-8">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-lg font-medium text-slate-300">
-              Generic Bots &amp; Basic Auto-Replies
-            </h3>
-            <span className="rounded-full border border-white/[0.07] bg-white/[0.02] px-3 py-1 text-xs text-slate-400">
-              Surface-level
-            </span>
-          </div>
-
-          <ul className="mt-6 space-y-4 text-sm text-slate-400">
-            <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
-              <div>
-                <p className="font-medium text-slate-200">
-                  Unstructured inquiry details
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Service need, budget or quantity, and timing stay buried in
-                  raw text.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
-              <div>
-                <p className="font-medium text-slate-200">
-                  No intent or lead scoring
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  High-urgency appointments and serious quotes look no
-                  different from casual browsing.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
-              <div>
-                <p className="font-medium text-slate-200">
-                  Disconnected from your knowledge base
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Misses clinic hours, service tiers, or export quote terms.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
-              <div>
-                <p className="font-medium text-slate-200">
-                  Opaque reply volume &amp; draft workflow
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Less clarity on monthly reply caps and review before
-                  sending.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-
-        <div className="rounded-[24px] border border-emerald-400/25 bg-gradient-to-b from-emerald-400/[0.06] to-white/[0.02] p-6 sm:p-8">
-          <div className="flex items-center justify-between gap-2">
-            <h3 className="text-lg font-medium text-white">
-              LeadPilot for Indian SMBs
-            </h3>
-            <span className="rounded-full border border-emerald-400/25 bg-emerald-400/[0.1] px-3 py-1 text-xs font-medium text-emerald-200">
-              Structured &amp; Contextual
-            </span>
-          </div>
-
-          <ul className="mt-6 space-y-4 text-sm text-slate-300">
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
-              <div>
-                <p className="font-medium text-white">
-                  Automatic field extraction
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Captures service needed, budget/quantity, urgency, and
-                  preferred time cleanly.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
-              <div>
-                <p className="font-medium text-white">
-                  Clear lead scoring
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Prioritizes high-intent leads so your team responds to
-                  what matters first.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
-              <div>
-                <p className="font-medium text-white">
-                  Knowledge base &amp; tone alignment
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  Drafts replies using your actual pricing, hours, policies,
-                  and brand voice.
-                </p>
-              </div>
-            </li>
-            <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
-              <div>
-                <p className="font-medium text-white">
-                  Predictable monthly reply quotas
-                </p>
-                <p className="mt-0.5 text-xs text-slate-400">
-                  1,500, 5,000, or 15,000 monthly AI replies tracked live in
-                  your workspace.
-                </p>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </section>
-
-    {/* 3. PRICING & TERMS */}
-    <section
-      id="pricing"
-      className="mx-auto max-w-6xl px-5 py-12 sm:px-8 lg:pb-24"
-    >
-      <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
-        <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-xs font-medium text-slate-300">
-            <Award className="h-3.5 w-3.5 text-emerald-300" />
-            Pricing &amp; Billing
-          </span>
-          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
-            Transparent plans &amp; billing cycles
-          </h2>
-          <p className="mt-2 max-w-xl text-sm text-slate-400 sm:text-base">
-            Pick a billing cycle and plan to continue directly to{" "}
-            <code className="rounded bg-white/[0.05] px-1.5 py-0.5 text-xs text-emerald-200">
-              /protected?plan=&lt;tier&gt;&amp;billing=&lt;cycle&gt;
-            </code>
-            .
+      {/* Difference from Generic Bots */}
+      <section
+        id="vs-generic"
+        className="mx-auto max-w-6xl border-t border-white/10 px-6 py-16"
+      >
+        <div className="mb-8 max-w-2xl">
+          <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
+            Difference from Generic Bots
           </p>
+          <h2 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
+            Not a rigid menu bot. Built for real buying intent.
+          </h2>
         </div>
 
-        {/* Billing Cycle Switcher */}
-        <div
-          role="group"
-          aria-label="Select billing cycle"
-          className="inline-flex flex-wrap rounded-full border border-white/[0.08] bg-white/[0.025] p-1"
-        >
-          {(["1m", "6m", "12m"] as BillingCycle[]).map((cycle) => {
-            const active = billingCycle === cycle;
-            const badge = billingBadge[cycle];
-            return (
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#2C3034]">
+          <table className="w-full text-left text-sm">
+            <thead className="border-b border-white/10 bg-[#232629] text-xs text-[#A8B0B8]">
+              <tr>
+                <th className="px-6 py-4">What happens on an inquiry</th>
+                <th className="px-6 py-4">Generic Auto-Reply / Menu Bot</th>
+                <th className="px-6 py-4 text-[#F28B7C]">LeadPilot</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-white/10 text-[#E5E8EC]">
+              <tr>
+                <td className="px-6 py-4 font-medium">Understanding intent</td>
+                <td className="px-6 py-4 text-[#9CA3AF]">
+                  Forces &ldquo;Press 1 for sales, 2 for timing&rdquo;
+                </td>
+                <td className="px-6 py-4">
+                  Reads natural messages &amp; spots exact service + urgency
+                </td>
+              </tr>
+              <tr>
+                <td className="px-6 py-4 font-medium">Budget &amp; fit check</td>
+                <td className="px-6 py-4 text-[#9CA3AF]">
+                  Treats low-fit and high-budget inquiries identically
+                </td>
+                <td className="px-6 py-4">
+                  Highlights budget signals and key details at a glance
+                </td>
+              </tr>
+              <tr>
+                <td className="px-6 py-4 font-medium">Reply control</td>
+                <td className="px-6 py-4 text-[#9CA3AF]">
+                  Rigid canned templates that feel robotic
+                </td>
+                <td className="px-6 py-4">
+                  Context-aware draft replies + metered monthly AI reply quota
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      {/* Pricing & Clear Terms */}
+      <section
+        id="pricing"
+        className="mx-auto max-w-6xl border-t border-white/10 px-6 py-16"
+      >
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
+              Pricing &amp; Terms
+            </p>
+            <h2 className="mt-1 font-serif text-3xl font-bold text-white sm:text-4xl">
+              Simple monthly reply quotas, zero guesswork
+            </h2>
+          </div>
+
+          {/* Billing Cycle Toggle */}
+          <div className="inline-flex rounded-lg border border-white/15 bg-[#2C3034] p-1 text-xs">
+            {(
+              [
+                { id: '1m', label: '1 Month' },
+                { id: '6m', label: '6 Months' },
+                { id: '12m', label: '12 Months' },
+              ] as { id: BillingCycle; label: string }[]
+            ).map((cycle) => (
               <button
-                key={cycle}
+                key={cycle.id}
                 type="button"
-                onClick={() => setBillingCycle(cycle)}
-                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition duration-200 sm:text-[13px] ${
-                  active
-                    ? "bg-emerald-400/[0.16] text-emerald-200 border border-emerald-400/35"
-                    : "text-slate-400 hover:text-white border border-transparent"
+                onClick={() => setBilling(cycle.id)}
+                className={`rounded-md px-3.5 py-2 font-medium transition ${
+                  billing === cycle.id
+                    ? 'bg-[#E85D4A] text-white'
+                    : 'text-[#CFD4DA] hover:text-white'
                 }`}
               >
-                <span>{billingCycleLabel[cycle]}</span>
-                {badge && (
-                  <span className="hidden rounded-full bg-white/[0.05] px-2 py-0.5 text-[10px] text-emerald-200/90 sm:inline-block">
-                    {badge}
-                  </span>
-                )}
+                {cycle.label}
               </button>
-            );
-          })}
+            ))}
+          </div>
         </div>
-      </div>
 
-      {/* Pricing Cards */}
-      <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
-        {PRICING_PLANS.map((plan) => {
-          const price = plan.monthlyPriceInr[billingCycle];
-          const planUrl = `/protected?plan=${plan.tier}&billing=${billingCycle}`;
-
-          return (
+        <div className="grid gap-6 md:grid-cols-3">
+          {PLANS.map((plan) => (
             <div
               key={plan.tier}
-              className={`relative flex flex-col justify-between rounded-[24px] border p-6 transition duration-200 sm:p-8 ${
-                plan.popular
-                  ? "border-emerald-400/35 bg-gradient-to-b from-emerald-400/[0.07] via-white/[0.02] to-white/[0.015]"
-                  : "border-white/[0.07] bg-white/[0.02] hover:border-white/[0.14]"
+              className={`flex flex-col justify-between rounded-2xl border p-6 ${
+                plan.featured
+                  ? 'border-[#E85D4A] bg-[#2B2F34]'
+                  : 'border-white/10 bg-[#2C3034]'
               }`}
             >
-              {plan.popular && (
-                <div className="absolute -top-3 left-6 rounded-full border border-emerald-400/35 bg-[#0c1618] px-3 py-0.5 text-[11px] font-medium text-emerald-200">
-                  Most Popular
-                </div>
-              )}
-
-              <div>
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-xl font-semibold text-white">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif text-2xl font-bold text-white">
                     {plan.name}
                   </h3>
-                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs text-slate-300">
-                    {plan.quotaLabel}
-                  </span>
+                  {plan.featured && (
+                    <span className="rounded bg-[#E85D4A] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                      Popular
+                    </span>
+                  )}
                 </div>
 
-                <p className="mt-3 text-sm leading-relaxed text-slate-400">
-                  {plan.tagline}
+                <p className="text-xs font-medium text-[#F28B7C]">
+                  {plan.quotaLabel}
                 </p>
 
-                <div className="mt-6 flex items-baseline gap-1.5 border-b border-white/[0.07] pb-6">
-                  <span className="inline-flex items-center text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-                    <IndianRupee className="h-6 w-6 text-slate-400" />
-                    {price.toLocaleString("en-IN")}
+                <div>
+                  <span className="text-3xl font-bold text-white">
+                    {plan.prices[billing]}
                   </span>
-                  <span className="text-xs text-slate-400 sm:text-sm">
-                    / month · {billingCycle}
+                  <span className="ml-1.5 text-xs text-[#A8B0B8]">
+                    / month ({billing})
                   </span>
                 </div>
 
-                <ul className="mt-6 space-y-3 text-sm text-slate-300">
-                  {plan.highlights.map((item) => (
-                    <li key={item} className="flex items-start gap-2.5">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300/90" />
-                      <span>{item}</span>
-                    </li>
+                <p className="text-sm text-[#CFD4DA]">{plan.summary}</p>
+
+                <ul className="space-y-2 border-t border-white/10 pt-4 text-xs text-[#E5E8EC]">
+                  {plan.perks.map((perk) => (
+                    <li key={perk}>• {perk}</li>
                   ))}
                 </ul>
               </div>
 
-              <div className="mt-8">
-                <a
-                  href={planUrl}
-                  className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition duration-200 ${
-                    plan.popular
-                      ? "border border-emerald-300/40 bg-emerald-400/[0.16] text-emerald-100 hover:bg-emerald-400/[0.24] hover:text-white"
-                      : "border border-white/[0.1] bg-white/[0.04] text-slate-200 hover:border-white/[0.2] hover:bg-white/[0.08] hover:text-white"
-                  }`}
-                >
-                  <span>
-                    Choose {plan.name} ({billingCycle})
-                  </span>
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </div>
+              <Link
+                href={`/protected?plan=${plan.tier}&billing=${billing}`}
+                className={`mt-6 block rounded-lg px-4 py-3 text-center text-sm font-semibold transition ${
+                  plan.featured
+                    ? 'bg-[#E85D4A] text-white hover:bg-[#d64e3b]'
+                    : 'bg-white/10 text-white hover:bg-white/15'
+                }`}
+              >
+                Choose {plan.name} ({billing}) →
+              </Link>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Terms & Quota Rules */}
-      <div className="mt-10 rounded-[24px] border border-white/[0.07] bg-white/[0.02] p-6 sm:p-8">
-        <div className="flex items-center gap-2 text-base font-medium text-white">
-          <ShieldCheck className="h-4 w-4 text-emerald-300" />
-          <span>Terms &amp; Quota Rules</span>
+          ))}
         </div>
 
-        <div className="mt-5 grid grid-cols-1 gap-4 text-sm text-slate-300 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
-            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
-              <Zap className="h-3.5 w-3.5 text-emerald-300" />
-              Monthly Reply Quotas
-            </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              Monthly AI reply caps are{" "}
-              <span className="text-slate-200">1,500</span> on Starter,{" "}
-              <span className="text-slate-200">5,000</span> on Growth, and{" "}
-              <span className="text-slate-200">15,000</span> on Pro.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
-            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
-              <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
-              Trial Status
-            </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              New workspaces can start in{" "}
-              <span className="text-slate-200">trial</span> status to
-              configure your business profile, knowledge base, and lead
-              workflow while testing replies within your plan limit.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
-            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
-              <HelpCircle className="h-3.5 w-3.5 text-amber-300/90" />
-              Quota Limit Reached
-            </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              When <code className="text-slate-200">monthly_replies_used</code>{" "}
-              reaches <code className="text-slate-200">monthly_reply_limit</code>,
-              new AI reply generation pauses until quota renewal or plan
-              upgrade.
-            </p>
-          </div>
-
-          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
-            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
-              <Sliders className="h-3.5 w-3.5 text-slate-300" />
-              Billing Cycle &amp; Expiry
-            </p>
-            <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              Choosing <span className="text-slate-200">1m</span>,{" "}
-              <span className="text-slate-200">6m</span>, or{" "}
-              <span className="text-slate-200">12m</span> sets your billing
-              cycle, monthly quota, and expiry date when saving your
-              profile.
-            </p>
-          </div>
+        {/* Terms Box */}
+        <div className="mt-8 rounded-2xl border border-white/10 bg-[#2C3034] p-6 text-xs leading-relaxed text-[#CFD4DA]">
+          <p className="font-semibold text-white">Key Terms &amp; Quota Rules</p>
+          <ul className="mt-2 space-y-1.5">
+            <li>
+              • <strong>Monthly Reply Cap:</strong> Each AI reply draft counts 1
+              unit toward your monthly plan limit (`1,500`, `5,000`, or
+              `15,000` replies) and is tracked live in your dashboard.
+            </li>
+            <li>
+              • <strong>Quota Limit Behaviour:</strong> Once your monthly reply
+              allowance is reached, new AI reply generations pause until the next
+              cycle or a plan upgrade.
+            </li>
+            <li>
+              • <strong>Billing Cycle &amp; Activation:</strong> Selecting a plan
+              carries your chosen tier and billing period (`1m`, `6m`, or `12m`)
+              into `/protected` for setup and activation.
+            </li>
+          </ul>
         </div>
-      </div>
-    </section>
-  </main>
-
-  {/* Footer */}
-  <footer className="relative z-10 border-t border-white/[0.06] bg-[#060911]">
-    <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-6 text-xs text-slate-500 sm:flex-row sm:px-8">
-      <p>LeadPilot · Lead Qualification &amp; Contextual Reply Drafting</p>
-      <div className="flex items-center gap-6">
-        <a href="#bot-in-action" className="transition hover:text-slate-300">
-          Bot in Action
-        </a>
-        <a href="#comparison" className="transition hover:text-slate-300">
-          Comparison
-        </a>
-        <a href="#pricing" className="transition hover:text-slate-300">
-          Pricing &amp; Terms
-        </a>
-      </div>
+      </section>
     </div>
-  </footer>
-</div>
-); }
+  );
+}
 
 
