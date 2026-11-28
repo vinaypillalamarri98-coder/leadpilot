@@ -19,6 +19,22 @@ function getExpiryDate(billingCycle: string): string {
   return now.toISOString();
 }
 
+async function incrementReplyUsage(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  businessId: string,
+  currentUsed: number | null | undefined
+) {
+  const nextUsed = (currentUsed ?? 0) + 1;
+  const { error } = await supabase
+    .from("businesses")
+    .update({ monthly_replies_used: nextUsed } as never)
+    .eq("id", businessId);
+
+  if (error) {
+    console.error("Failed to increment monthly_replies_used:", error.message);
+  }
+}
+
 export async function saveBusinessProfile(formData: FormData) {
   const supabase = await createClient();
   const {
@@ -126,6 +142,15 @@ export async function createAndAnalyzeLead(formData: FormData) {
 
   if (!business) throw new Error("Please save your business profile first");
 
+  const used = Number((business as { monthly_replies_used?: number }).monthly_replies_used ?? 0);
+  const limit = Number((business as { monthly_reply_limit?: number }).monthly_reply_limit ?? 1500);
+
+  if (used >= limit) {
+    throw new Error(
+      `Monthly AI reply limit reached (${used}/${limit}). Upgrade your plan to generate more replies.`
+    );
+  }
+
   const analysis = await analyzeLeadAndDraftReply({
     businessName: business.name,
     industry: business.industry,
@@ -181,6 +206,8 @@ export async function createAndAnalyzeLead(formData: FormData) {
   ] as never);
 
   if (msgError) throw new Error(msgError.message);
+
+  await incrementReplyUsage(supabase, business.id, used);
 
   try {
     await sendNewLeadEmail({
@@ -262,12 +289,22 @@ export async function submitPublicLeadAction(
 
   const { data: business, error: bizError } = await supabase
     .from("businesses")
-    .select("id, name, industry, tone, knowledge_base")
+    .select("*")
     .eq("id", businessId)
     .maybeSingle();
 
   if (bizError || !business) {
     return { ok: false, error: "Business not found." };
+  }
+
+  const used = Number((business as { monthly_replies_used?: number }).monthly_replies_used ?? 0);
+  const limit = Number((business as { monthly_reply_limit?: number }).monthly_reply_limit ?? 1500);
+
+  if (used >= limit) {
+    return {
+      ok: false,
+      error: "This business has reached its monthly AI reply quota.",
+    };
   }
 
   const analysis = await analyzeLeadAndDraftReply({
@@ -330,6 +367,8 @@ export async function submitPublicLeadAction(
   if (msgError) {
     return { ok: false, error: msgError.message };
   }
+
+  await incrementReplyUsage(supabase, business.id, used);
 
   try {
     await sendNewLeadEmail({
