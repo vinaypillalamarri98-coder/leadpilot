@@ -57,6 +57,13 @@ export async function saveBusinessProfile(formData: FormData) {
     .eq("owner_id", user.id)
     .maybeSingle();
 
+  const planFields = {
+    plan_tier: planTier,
+    billing_cycle: billingCycle,
+    monthly_reply_limit: PLAN_QUOTAS[planTier],
+    plan_expires_at: getExpiryDate(billingCycle),
+  };
+
   const payload = existing
     ? {
         owner_id: user.id,
@@ -68,6 +75,7 @@ export async function saveBusinessProfile(formData: FormData) {
         whatsapp_phone_number_id: whatsappPhoneNumberId || null,
         whatsapp_access_token: whatsappAccessToken || null,
         whatsapp_enabled: whatsappEnabled,
+        ...planFields,
       }
     : {
         owner_id: user.id,
@@ -79,12 +87,9 @@ export async function saveBusinessProfile(formData: FormData) {
         whatsapp_phone_number_id: whatsappPhoneNumberId || null,
         whatsapp_access_token: whatsappAccessToken || null,
         whatsapp_enabled: whatsappEnabled,
-        plan_tier: planTier,
-        billing_cycle: billingCycle,
         subscription_status: "trial",
-        monthly_reply_limit: PLAN_QUOTAS[planTier],
         monthly_replies_used: 0,
-        plan_expires_at: getExpiryDate(billingCycle),
+        ...planFields,
       };
 
   const { error } = existing
