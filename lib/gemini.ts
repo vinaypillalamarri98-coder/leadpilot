@@ -30,18 +30,24 @@ export async function analyzeLeadAndDraftReply(params: {
   businessName: string;
   industry?: string | null;
   tone?: string | null;
+  knowledgeBase?: string | null;
   leadName?: string | null;
   message: string;
 }): Promise<LeadAnalysis> {
   const businessName = params.businessName.trim();
   const industry = params.industry?.trim() || "general business";
   const tone = params.tone?.trim() || "friendly and professional";
+  const knowledgeBase = params.knowledgeBase?.trim() || "";
   const leadName = params.leadName?.trim() || "Customer";
   const message = params.message.trim();
 
-  const systemInstruction = `You are LeadPilot's fast lead triage assistant for "${businessName}" (${industry}).
-Match a ${tone} tone. Keep reply_draft concise (2-4 sentences), clear, and ready to send.
-Extract accurate details only when present; use null when missing.`;
+  const kbSection = knowledgeBase
+    ? `\n\nCompany Knowledge Base (use these exact prices, services, timings, and policies when answering—do not invent facts outside this):\n${knowledgeBase}`
+    : "";
+
+  const systemInstruction = `You are LeadPilot's fast AI assistant for "${businessName}" (${industry}).
+Match a ${tone} tone. Keep reply_draft concise (2-4 sentences), helpful, accurate, and ready to send.
+Extract accurate details only when present; use null when missing.${kbSection}`;
 
   const prompt = `Customer: ${leadName}
 Inquiry: ${message}`;

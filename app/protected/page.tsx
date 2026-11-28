@@ -59,7 +59,7 @@ async function LeadPilotWorkspace() {
             {business ? "Business Settings" : "Step 1: Set Up Your Business"}
           </h2>
           <p className="text-sm text-gray-500">
-            LeadPilot uses this context to score leads and write replies in your voice.
+            LeadPilot uses this context and your knowledge base to answer customer questions accurately.
           </p>
         </div>
 
@@ -98,6 +98,18 @@ async function LeadPilotWorkspace() {
               name="tone"
               defaultValue={business?.tone ?? "friendly and professional"}
               placeholder="friendly and professional"
+              className="w-full rounded border px-3 py-2 text-sm"
+            />
+          </div>
+          <div className="sm:col-span-2">
+            <label className="mb-1 block text-sm font-medium">
+              Company Knowledge Base (Services, Pricing, Timings & FAQs)
+            </label>
+            <textarea
+              name="knowledge_base"
+              rows={5}
+              defaultValue={business?.knowledge_base ?? ""}
+              placeholder={"Example:\n- Teeth Cleaning & Scaling: ₹1,500 (takes 30 mins)\n- Teeth Whitening: ₹6,500\n- Timings: Mon–Sat, 10:00 AM to 8:00 PM (Closed Sundays)\n- Location: Banjara Hills Road No. 12, Hyderabad"}
               className="w-full rounded border px-3 py-2 text-sm"
             />
           </div>

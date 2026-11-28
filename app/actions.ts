@@ -17,6 +17,7 @@ export async function saveBusinessProfile(formData: FormData) {
   const industry = String(formData.get("industry") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
   const tone = String(formData.get("tone") || "friendly and professional").trim();
+  const knowledgeBase = String(formData.get("knowledge_base") || "").trim();
 
   if (!name) throw new Error("Business name is required");
 
@@ -26,6 +27,7 @@ export async function saveBusinessProfile(formData: FormData) {
     industry: industry || null,
     phone: phone || null,
     tone,
+    knowledge_base: knowledgeBase || null,
   };
 
   const { data: existing } = await supabase
@@ -69,6 +71,7 @@ export async function createAndAnalyzeLead(formData: FormData) {
     businessName: business.name,
     industry: business.industry,
     tone: business.tone,
+    knowledgeBase: business.knowledge_base,
     leadName: leadName || null,
     message,
   });
@@ -200,7 +203,7 @@ export async function submitPublicLeadAction(
 
   const { data: business, error: bizError } = await supabase
     .from("businesses")
-    .select("id, name, industry, tone")
+    .select("id, name, industry, tone, knowledge_base")
     .eq("id", businessId)
     .maybeSingle();
 
@@ -212,6 +215,7 @@ export async function submitPublicLeadAction(
     businessName: business.name,
     industry: business.industry,
     tone: business.tone,
+    knowledgeBase: business.knowledge_base,
     leadName: leadName || null,
     message,
   });
