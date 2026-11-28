@@ -154,6 +154,18 @@ export default function LeadPilotLandingPage() {
 
   return (
     <div className="min-h-screen bg-[#34383C] text-[#F4F2EE] selection:bg-[#E85D4A] selection:text-white">
+<section className="relative h-screen w-full overflow-hidden bg-[#1F2327]">
+        <video
+          src="/leadpilot-ad.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          controls
+          preload="metadata"
+          className="h-full w-full object-cover"
+        />
+      </section>      
       {/* Top Bar */}
       <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-5 text-sm">
         <div className="flex items-center gap-2.5">
@@ -623,21 +635,7 @@ export default function LeadPilotLandingPage() {
             </li>
           </ul>
         </div>
-      </section>
-<section className="mx-auto max-w-5xl px-6 py-10">
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1F2327] shadow-xl">
-          <video
-            src="/leadpilot-ad.mp4"
-            autoPlay
-            loop
-            muted
-            playsInline
-            controls
-            preload="metadata"
-            className="h-auto w-full object-cover"
-          />
-        </div>
-      </section>      
+      </section> 
     </div>
   );
 }
