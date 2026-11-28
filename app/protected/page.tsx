@@ -1,4 +1,4 @@
-﻿import { Suspense } from "react";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { saveBusinessProfile, createAndAnalyzeLead } from "@/app/actions";
@@ -113,6 +113,51 @@ async function LeadPilotWorkspace() {
               className="w-full rounded border px-3 py-2 text-sm"
             />
           </div>
+
+          <div className="sm:col-span-2 border-t pt-4">
+            <h3 className="text-sm font-semibold">WhatsApp Cloud API Auto-Reply</h3>
+            <p className="mb-3 text-xs text-gray-500">
+              Webhook URL: https://leadpilot-pa3k.vercel.app/api/webhooks/whatsapp
+            </p>
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  WhatsApp Phone Number ID
+                </label>
+                <input
+                  name="whatsapp_phone_number_id"
+                  defaultValue={business?.whatsapp_phone_number_id ?? ""}
+                  placeholder="e.g. 123456789012345"
+                  className="w-full rounded border px-3 py-2 text-sm"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-sm font-medium">
+                  WhatsApp Access Token (optional if using env default)
+                </label>
+                <input
+                  name="whatsapp_access_token"
+                  type="password"
+                  defaultValue={business?.whatsapp_access_token ?? ""}
+                  placeholder="EAA..."
+                  className="w-full rounded border px-3 py-2 text-sm"
+                />
+              </div>
+              <div className="sm:col-span-2 flex items-center gap-2">
+                <input
+                  id="whatsapp_enabled"
+                  name="whatsapp_enabled"
+                  type="checkbox"
+                  defaultChecked={Boolean(business?.whatsapp_enabled)}
+                  className="h-4 w-4 rounded border"
+                />
+                <label htmlFor="whatsapp_enabled" className="text-sm">
+                  Enable 24/7 automated WhatsApp replies for incoming messages
+                </label>
+              </div>
+            </div>
+          </div>
+
           <div className="sm:col-span-2">
             <SubmitButton
               label={business ? "Update Business Profile" : "Save Business Profile"}

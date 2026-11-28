@@ -1,4 +1,4 @@
-﻿"use server";
+"use server";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
@@ -18,6 +18,13 @@ export async function saveBusinessProfile(formData: FormData) {
   const phone = String(formData.get("phone") || "").trim();
   const tone = String(formData.get("tone") || "friendly and professional").trim();
   const knowledgeBase = String(formData.get("knowledge_base") || "").trim();
+  const whatsappPhoneNumberId = String(
+    formData.get("whatsapp_phone_number_id") || ""
+  ).trim();
+  const whatsappAccessToken = String(
+    formData.get("whatsapp_access_token") || ""
+  ).trim();
+  const whatsappEnabled = formData.get("whatsapp_enabled") === "on";
 
   if (!name) throw new Error("Business name is required");
 
@@ -28,6 +35,9 @@ export async function saveBusinessProfile(formData: FormData) {
     phone: phone || null,
     tone,
     knowledge_base: knowledgeBase || null,
+    whatsapp_phone_number_id: whatsappPhoneNumberId || null,
+    whatsapp_access_token: whatsappAccessToken || null,
+    whatsapp_enabled: whatsappEnabled,
   };
 
   const { data: existing } = await supabase

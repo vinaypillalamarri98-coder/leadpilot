@@ -1,4 +1,4 @@
-ï»¿import { Resend } from "resend";
+import { Resend } from "resend";
 
 export interface LeadAlertPayload {
   businessName: string;
@@ -24,17 +24,17 @@ export async function sendNewLeadEmail(payload: LeadAlertPayload) {
   }
 
   const resend = new Resend(apiKey);
-  const subject = `New Lead (${payload.score ?? "â€”"}/100): ${payload.leadName} â€” ${payload.businessName}`;
+  const subject = `New Lead (${payload.score ?? "—"}/100): ${payload.leadName} — ${payload.businessName}`;
 
   const text = [
     `Business: ${payload.businessName}`,
     `Source: ${payload.source === "public_form" ? "Public Inquiry Form" : "Dashboard"}`,
     `Lead: ${payload.leadName}`,
     `Contact: ${payload.contact || "Not provided"}`,
-    `Score: ${payload.score ?? "â€”"}/100 | Urgency: ${payload.urgency || "normal"}`,
-    `Service: ${payload.serviceNeeded || "â€”"}`,
-    `Preferred Time: ${payload.preferredTime || "â€”"}`,
-    `Budget: ${payload.budget || "â€”"}`,
+    `Score: ${payload.score ?? "—"}/100 | Urgency: ${payload.urgency || "normal"}`,
+    `Service: ${payload.serviceNeeded || "—"}`,
+    `Preferred Time: ${payload.preferredTime || "—"}`,
+    `Budget: ${payload.budget || "—"}`,
     "",
     "Customer Message:",
     payload.message,
