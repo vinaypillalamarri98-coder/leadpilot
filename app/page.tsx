@@ -155,18 +155,50 @@ export default function LeadPilotLandingPage() {
   return (
     <div className="min-h-screen bg-[#34383C] text-[#F4F2EE] selection:bg-[#E85D4A] selection:text-white">
 <section className="relative h-screen w-full overflow-hidden bg-[#1F2327]">
+        {/* Background Video (Unstoppable) */}
         <video
           src="/leadpilot-ad.mp4"
           autoPlay
           loop
           muted
           playsInline
-          controls
           preload="metadata"
-          className="h-full w-full object-cover"
+          className="pointer-events-none h-full w-full object-cover"
         />
-      </section>      
-      {/* Top Bar */}
+
+        {/* Dark Overlay so text & buttons stand out clearly */}
+        <div className="absolute inset-0 bg-black/55" />
+
+        {/* Text & Buttons Overlay */}
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-[#F4F2EE]">
+          <span className="mb-3 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-medium uppercase tracking-wider backdrop-blur-sm">
+            AI-Powered Lead Generation
+          </span>
+
+          <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
+            Turn Visitors Into Qualified Leads on Autopilot
+          </h1>
+
+          <p className="mt-4 max-w-xl text-base text-white/80 sm:text-lg">
+            LeadPilot captures, qualifies, and follows up with your prospects 24/7 so you never miss a deal.
+          </p>
+
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+            <a
+              href="/sign-up"
+              className="rounded-xl bg-[#E85D4A] px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:opacity-90"
+            >
+              Get Started Free
+            </a>
+            <a
+              href="#how-it-works"
+              className="rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+            >
+              See How It Works
+            </a>
+          </div>
+        </div>
+      </section>
       <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-5 text-sm">
         <div className="flex items-center gap-2.5">
           <span className="font-serif text-xl font-bold tracking-tight text-white">
