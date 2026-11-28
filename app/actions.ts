@@ -30,7 +30,9 @@ export async function saveBusinessProfile(formData: FormData) {
   const name = String(formData.get("name") || "").trim();
   const industry = String(formData.get("industry") || "").trim();
   const phone = String(formData.get("phone") || "").trim();
-  const tone = String(formData.get("tone") || "friendly and professional").trim();
+  const tone = String(
+    formData.get("tone") || "friendly and professional"
+  ).trim();
   const knowledgeBase = String(formData.get("knowledge_base") || "").trim();
   const whatsappPhoneNumberId = String(
     formData.get("whatsapp_phone_number_id") || ""
@@ -51,7 +53,7 @@ export async function saveBusinessProfile(formData: FormData) {
 
   const { data: existing } = await supabase
     .from("businesses")
-    .select("id, plan_tier, billing_cycle, monthly_reply_limit, plan_expires_at")
+    .select("id")
     .eq("owner_id", user.id)
     .maybeSingle();
 
@@ -86,8 +88,11 @@ export async function saveBusinessProfile(formData: FormData) {
       };
 
   const { error } = existing
-    ? await supabase.from("businesses").update(payload).eq("id", existing.id)
-    : await supabase.from("businesses").insert(payload);
+    ? await supabase
+        .from("businesses")
+        .update(payload as never)
+        .eq("id", existing.id)
+    : await supabase.from("businesses").insert(payload as never);
 
   if (error) throw new Error(error.message);
 
@@ -143,7 +148,7 @@ export async function createAndAnalyzeLead(formData: FormData) {
       budget: analysis.budget,
       score: analysis.score,
       status: "new",
-    })
+    } as never)
     .select()
     .single();
 
@@ -168,7 +173,7 @@ export async function createAndAnalyzeLead(formData: FormData) {
       ai_generated: true,
       status: "draft",
     },
-  ]);
+  ] as never);
 
   if (msgError) throw new Error(msgError.message);
 
@@ -202,7 +207,7 @@ export async function updateLeadStatus(formData: FormData) {
 
   const { error } = await supabase
     .from("leads")
-    .update({ status })
+    .update({ status } as never)
     .eq("id", leadId);
 
   if (error) throw new Error(error.message);
@@ -287,7 +292,7 @@ export async function submitPublicLeadAction(
       budget: analysis.budget,
       score: analysis.score,
       status: "new",
-    })
+    } as never)
     .select("id")
     .single();
 
@@ -315,7 +320,7 @@ export async function submitPublicLeadAction(
       ai_generated: true,
       status: "draft",
     },
-  ]);
+  ] as never);
 
   if (msgError) {
     return { ok: false, error: msgError.message };
