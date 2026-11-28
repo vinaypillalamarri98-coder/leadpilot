@@ -217,6 +217,27 @@ export default function LeadPilotLandingPage() {
               <p className="mt-1 text-xs uppercase tracking-wider text-slate-400">Automated Follow-Up</p>
             </div>
           </div>
+          {/* Live Reply Flow Preview */}
+          <div className="mt-8 w-full max-w-2xl rounded-xl border border-blue-500/25 bg-[#0F172A]/90 p-4 text-left backdrop-blur-md">
+            <div className="mb-2.5 flex items-center justify-between text-xs">
+              <span className="font-medium text-blue-400">Live Reply Flow</span>
+              <span className="text-slate-400">Auto-reply in 4s</span>
+            </div>
+            <div className="grid gap-2.5 text-xs sm:grid-cols-2">
+              <div className="rounded-lg bg-white/5 p-2.5 text-slate-300">
+                <span className="block text-[10px] uppercase tracking-wider text-slate-400">
+                  Incoming Lead
+                </span>
+                Need pricing &amp; availability for 50 seats this month.
+              </div>
+              <div className="rounded-lg border border-blue-500/30 bg-blue-600/15 p-2.5 text-white">
+                <span className="block text-[10px] uppercase tracking-wider text-blue-300">
+                  LeadPilot Reply
+                </span>
+                Sent tier pricing + slot link. Want a 10-min walkthrough today?
+              </div>
+            </div>
+          </div>
         </div>
   </section>
         <header className="sticky top-0 z-30 border-b border-white/10 bg-[#090D16]/85 backdrop-blur-md">
@@ -316,7 +337,7 @@ export default function LeadPilotLandingPage() {
       >
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
+            <p className="text-xs font-semibold tracking-wider text-blue-400 uppercase">
               Live Bot Preview
             </p>
             <h2 className="mt-1  text-3xl font-bold text-white sm:text-4xl">
@@ -359,22 +380,22 @@ export default function LeadPilotLandingPage() {
 
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Incoming Lead & Custom Tester */}
-          <div className="space-y-4 rounded-2xl border border-white/10 bg-[#2C3034] p-6 lg:col-span-5">
-            <div className="flex items-center justify-between text-xs text-[#A8B0B8]">
+          <div className="space-y-4 rounded-2xl border border-white/10 bg-[#0F172A] p-6 lg:col-span-5">
+            <div className="flex items-center justify-between text-xs text-slate-400">
               <span>Incoming Inquiry · {active.channel}</span>
-              <span className="rounded bg-white/10 px-2 py-0.5 text-[#F4F2EE]">
+              <span className="bg-blue-500/15 px-2 py-0.5 text-blue-300">
                 {active.businessType}
               </span>
             </div>
 
-            <div className="rounded-xl bg-[#383D42] p-4 text-sm leading-relaxed text-[#F4F2EE]">
+            <div className="rounded-xl border border-white/10 bg-[#090D16] p-4 text-sm leading-relaxed text-slate-200">
               &ldquo;{displayMessage}&rdquo;
             </div>
 
             <form onSubmit={handleCustomSubmit} className="space-y-2.5 pt-2">
               <label
                 htmlFor="test-lead-input"
-                className="block text-xs font-medium text-[#CFD4DA]"
+                className="block text-xs font-medium text-slate-300"
               >
                 Try your own sample customer message:
               </label>
@@ -385,11 +406,11 @@ export default function LeadPilotLandingPage() {
                   value={customInput}
                   onChange={(e) => setCustomInput(e.target.value)}
                   placeholder="e.g., Need hair smoothening this Sunday, budget 8k..."
-                  className="w-full rounded-lg border border-white/15 bg-[#232629] px-3.5 py-2.5 text-xs text-white placeholder-[#8B939C] focus:border-[#E85D4A] focus:outline-none"
+              className="w-full rounded-lg border border-white/15 bg-[#090D16] px-3.5 py-2.5 text-xs text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none"
                 />
                 <button
                   type="submit"
-                  className="shrink-0 rounded-lg bg-[#E85D4A] px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-[#d64e3b]"
+              className="shrink-0 rounded-lg bg-blue-600 px-4 py-2.5 text-xs font-semibold text-white shadow-sm shadow-blue-600/20 transition hover:bg-blue-500"
                 >
                   Preview
                 </button>
@@ -398,39 +419,42 @@ export default function LeadPilotLandingPage() {
           </div>
 
           {/* Extracted Lead Signals + Draft Reply */}
-          <div className="space-y-5 rounded-2xl border border-white/10 bg-[#2C3034] p-6 lg:col-span-7">
+          <div className="space-y-5 rounded-2xl border border-white/10 bg-[#0F172A] p-6 lg:col-span-7">
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <div className="rounded-xl bg-[#232629] p-3">
-                <p className="text-[11px] text-[#9CA3AF]">Service Need</p>
+             <div className="rounded-xl border border-white/10 bg-[#090D16] p-3">
+  <p className="text-[11px] text-slate-400">Service Need</p>
                 <p className="mt-1 text-xs font-semibold text-white">
                   {customInput.trim() ? 'Custom Inquiry' : active.extracted.need}
                 </p>
               </div>
-              <div className="rounded-xl bg-[#232629] p-3">
-                <p className="text-[11px] text-[#9CA3AF]">Budget Signal</p>
-                <p className="mt-1 text-xs font-semibold text-[#F28B7C]">
+              <div className="rounded-xl border border-white/10 bg-[#090D16] p-3">
+  <p className="text-[11px] text-slate-400">Budget Signal</p>
+                <p className="mt-1 text-xs font-semibold text-blue-300">
                   {customInput.trim() ? 'Detected in text' : active.extracted.budget}
                 </p>
               </div>
-              <div className="rounded-xl bg-[#232629] p-3">
-                <p className="text-[11px] text-[#9CA3AF]">Urgency</p>
+              <div className="rounded-xl border border-white/10 bg-[#090D16] p-3">
+  <p className="text-[11px] text-slate-400">Urgency</p>
                 <p className="mt-1 text-xs font-semibold text-white">
                   {customInput.trim() ? 'Flagged for review' : active.extracted.urgency}
                 </p>
               </div>
-              <div className="rounded-xl bg-[#232629] p-3">
-                <p className="text-[11px] text-[#9CA3AF]">Lead Priority</p>
+              <div className="rounded-xl border border-white/10 bg-[#090D16] p-3">
+  <p className="text-[11px] text-slate-400">Lead Priority</p>
                 <p className="mt-1 text-xs font-semibold text-emerald-400">
                   {customInput.trim() ? 'Qualified Draft' : active.extracted.score}
                 </p>
               </div>
             </div>
 
-            <div className="rounded-xl border border-[#E85D4A]/30 bg-[#232629] p-4">
-              <p className="text-xs font-semibold text-[#E85D4A]">
+            <div className="rounded-xl border border-blue-500/30 bg-blue-600/10 p-4">
+  <p className="text-xs font-semibold text-blue-400">
                 Drafted Reply Ready for Your Team
               </p>
-              <p className="mt-2 text-sm leading-relaxed text-[#E5E8EC]">
+              <p className="mt-2 text-sm leading-relaxed text-slate-200">
+```[cite: 5]
+
+Press **Ctrl + S** to save, then scroll down past line 454 to see what comes after the draft reply.
                 {customInput.trim()
                   ? `Thanks for reaching out! We have noted your request ("${customInput.trim()}") and checked availability. Share your preferred time or date and we will confirm the exact details right away.`
                   : active.botReply}
@@ -446,7 +470,7 @@ export default function LeadPilotLandingPage() {
         className="mx-auto max-w-6xl border-t border-white/10 px-6 py-16"
       >
         <div className="mb-8 max-w-2xl">
-          <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
+          <p className="text-xs font-semibold tracking-wider text-blue-400 uppercase">
             Difference from Generic Bots
           </p>
           <h2 className="mt-1  text-3xl font-bold text-white sm:text-4xl">
@@ -454,19 +478,20 @@ export default function LeadPilotLandingPage() {
           </h2>
         </div>
 
-        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#2C3034]">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#0F172A]">
           <table className="w-full text-left text-sm">
-            <thead className="border-b border-white/10 bg-[#232629] text-xs text-[#A8B0B8]">
+            <thead className="border-b border-white/10 bg-[#090D16] text-xs text-slate-400">
               <tr>
                 <th className="px-6 py-4">What happens on an inquiry</th>
                 <th className="px-6 py-4">Generic Auto-Reply / Menu Bot</th>
-                <th className="px-6 py-4 text-[#F28B7C]">LeadPilot</th>
+                <th className="px-6 py-4 text-blue-400">LeadPilot</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/10 text-[#E5E8EC]">
+            <tbody className="divide-y divide-white/10 text-slate-200">
               <tr>
                 <td className="px-6 py-4 font-medium">Understanding intent</td>
                 <td className="px-6 py-4 text-[#9CA3AF]">
+```[cite: 6]
                   Forces &ldquo;Press 1 for sales, 2 for timing&rdquo;
                 </td>
                 <td className="px-6 py-4">
@@ -475,7 +500,7 @@ export default function LeadPilotLandingPage() {
               </tr>
               <tr>
                 <td className="px-6 py-4 font-medium">Budget &amp; fit check</td>
-                <td className="px-6 py-4 text-[#9CA3AF]">
+                <td className="px-6 py-4 text-slate-400">
                   Treats low-fit and high-budget inquiries identically
                 </td>
                 <td className="px-6 py-4">
@@ -484,7 +509,7 @@ export default function LeadPilotLandingPage() {
               </tr>
               <tr>
                 <td className="px-6 py-4 font-medium">Reply control</td>
-                <td className="px-6 py-4 text-[#9CA3AF]">
+                <td className="px-6 py-4 text-slate-400">
                   Rigid canned templates that feel robotic
                 </td>
                 <td className="px-6 py-4">
@@ -503,7 +528,7 @@ export default function LeadPilotLandingPage() {
       >
         <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <p className="text-xs font-semibold tracking-wider text-[#E85D4A] uppercase">
+            <p className="text-xs font-semibold tracking-wider text-blue-400 uppercase">
               Pricing &amp; Terms
             </p>
             <h2 className="mt-1  text-3xl font-bold text-white sm:text-4xl">
@@ -513,6 +538,7 @@ export default function LeadPilotLandingPage() {
 
           {/* Billing Cycle Toggle */}
           <div className="inline-flex rounded-lg border border-white/15 bg-[#2C3034] p-1 text-xs">
+```[cite: 8]
             {(
               [
                 { id: '1m', label: '1 Month' },
@@ -525,10 +551,10 @@ export default function LeadPilotLandingPage() {
                 type="button"
                 onClick={() => setBilling(cycle.id)}
                 className={`rounded-md px-3.5 py-2 font-medium transition ${
-                  billing === cycle.id
-                    ? 'bg-[#E85D4A] text-white'
-                    : 'text-[#CFD4DA] hover:text-white'
-                }`}
+                billing === cycle.id
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
               >
                 {cycle.label}
               </button>
@@ -542,8 +568,8 @@ export default function LeadPilotLandingPage() {
               key={plan.tier}
               className={`flex flex-col justify-between rounded-2xl border p-6 ${
                 plan.featured
-                  ? 'border-[#E85D4A] bg-[#2B2F34]'
-                  : 'border-white/10 bg-[#2C3034]'
+                  ? 'border-blue-500/50 bg-[#0F172A] shadow-lg shadow-blue-950/20'
+                  : 'border-white/10 bg-[#090D16]'
               }`}
             >
               <div className="space-y-4">
@@ -552,13 +578,14 @@ export default function LeadPilotLandingPage() {
                     {plan.name}
                   </h3>
                   {plan.featured && (
-                    <span className="rounded bg-[#E85D4A] px-2.5 py-0.5 text-[11px] font-semibold text-white">
+                  <span className="rounded-full bg-blue-600/20 border border-blue-500/30 px-2.5 py-0.5 text-[11px] font-semibold text-blue-300">
+```[cite: 8]
                       Popular
                     </span>
                   )}
                 </div>
 
-                <p className="text-xs font-medium text-[#F28B7C]">
+                <p className="text-xs font-medium text-blue-400">
                   {plan.quotaLabel}
                 </p>
 
@@ -566,14 +593,17 @@ export default function LeadPilotLandingPage() {
                   <span className="text-3xl font-bold text-white">
                     {plan.prices[billing]}
                   </span>
-                  <span className="ml-1.5 text-xs text-[#A8B0B8]">
+                  <span className="ml-1.5 text-xs text-slate-400">
                     / month ({billing})
                   </span>
                 </div>
 
-                <p className="text-sm text-[#CFD4DA]">{plan.summary}</p>
+                <p className="text-sm text-slate-400">{plan.summary}</p>
 
-                <ul className="space-y-2 border-t border-white/10 pt-4 text-xs text-[#E5E8EC]">
+                <ul className="space-y-2 border-t border-white/10 pt-4 text-xs text-slate-200">
+? 'bg-blue-600 text-white hover:bg-blue-500 shadow-sm shadow-blue-950/30'
+                  : 'bg-white/10 text-white hover:bg-white/15'
+```[cite: 9]
                   {plan.perks.map((perk) => (
                     <li key={perk}>• {perk}</li>
                   ))}
@@ -595,27 +625,16 @@ export default function LeadPilotLandingPage() {
         </div>
 
         {/* Terms Box */}
-        <div className="mt-8 rounded-2xl border border-white/10 bg-[#2C3034] p-6 text-xs leading-relaxed text-[#CFD4DA]">
-          <p className="font-semibold text-white">Key Terms &amp; Quota Rules</p>
-          <ul className="mt-2 space-y-1.5">
-            <li>
-              • <strong>Monthly Reply Cap:</strong> Each AI reply draft counts 1
-              unit toward your monthly plan limit (`1,500`, `5,000`, or
-              `15,000` replies) and is tracked live in your dashboard.
-            </li>
-            <li>
-              • <strong>Quota Limit Behaviour:</strong> Once your monthly reply
-              allowance is reached, new AI reply generations pause until the next
-              cycle or a plan upgrade.
-            </li>
-            <li>
-              • <strong>Billing Cycle &amp; Activation:</strong> Selecting a plan
-              carries your chosen tier and billing period (`1m`, `6m`, or `12m`)
-              into `/protected` for setup and activation.
-    </li>
+        <div className="mt-8 rounded-2xl border border-white/10 bg-[#090D16] p-6 text-xs leading-relaxed">
+          <p className="font-semibold text-white">Key Terms</p>
+          <ul className="mt-2 space-y-1.5 text-slate-400">
+            <li>• 1 AI reply draft = 1 credit toward your monthly cap (1,500 / 5,000 / 15,000).</li>
+            <li>• Generations pause at cap until next cycle or upgrade.</li>
+            <li>• Selected tier and billing cycle carry into /protected for setup.</li>
           </ul>
-        </div>
+       </div>
       </section>
     </div>
-  );
+    );
 }
+ 
