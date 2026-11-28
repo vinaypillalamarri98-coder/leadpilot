@@ -153,8 +153,8 @@ export default function LeadPilotLandingPage() {
   const displayMessage = customInput.trim() ? customInput.trim() : active.incomingMessage;
 
   return (
-    <div className="min-h-screen bg-[#34383C] text-[#F4F2EE] selection:bg-[#E85D4A] selection:text-white">
-<section className="relative h-screen w-full overflow-hidden bg-[#1F2327]">
+    <div className="min-h-screen bg-[#090D16] text-[#F8FAFC] selection:bg-blue-600 selection:text-white">
+      <section className="relative h-screen w-full overflow-hidden bg-[#090D16]">
         {/* Background Video (Unstoppable) */}
         <video
           src="/leadpilot-ad.mp4"
@@ -163,50 +163,62 @@ export default function LeadPilotLandingPage() {
           muted
           playsInline
           preload="metadata"
-          className="pointer-events-none h-full w-full object-cover"
+          className="pointer-events-none h-full w-full object-cover opacity-60"
         />
 
-        {/* Dark Overlay so text & buttons stand out clearly */}
-        <div className="absolute inset-0 bg-black/55" />
+        {/* Executive Navy Vignette Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#090D16]/80 via-[#090D16]/65 to-[#090D16]" />
 
         {/* Text & Buttons Overlay */}
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center text-[#F4F2EE]">
-          <span className="mb-3 rounded-full border border-white/20 bg-white/10 px-4 py-1 text-xs font-medium uppercase tracking-wider backdrop-blur-sm">
-            AI-Powered Lead Generation
-          </span>
+        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center px-6 text-center">
+          <div className="mb-5 inline-flex items-center gap-2 rounded-full border border-blue-500/30 bg-blue-500/10 px-4 py-1.5 text-xs font-medium text-blue-300 backdrop-blur-md">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            Enterprise AI Lead Qualification &amp; Follow-Up
+          </div>
 
-          <h1 className="max-w-3xl text-4xl font-bold tracking-tight sm:text-6xl">
-            Turn Visitors Into Qualified Leads on Autopilot
+          <h1 className="max-w-4xl text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl">
+            Convert Every Visitor Into{" "}
+            <span className="bg-gradient-to-r from-blue-400 via-indigo-400 to-cyan-300 bg-clip-text text-transparent">
+              Qualified Pipeline
+            </span>
           </h1>
 
-          <p className="mt-4 max-w-xl text-base text-white/80 sm:text-lg">
-            LeadPilot captures, qualifies, and follows up with your prospects 24/7 so you never miss a deal.
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
+            LeadPilot engages inbound prospects in real time, qualifies buying intent, and books meetings directly onto your team&apos;s calendar—24/7.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-4">
             <a
               href="/sign-up"
-              className="rounded-xl bg-[#E85D4A] px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:opacity-90"
+              className="rounded-lg bg-blue-600 px-7 py-3.5 text-sm font-semibold text-white shadow-lg shadow-blue-600/25 transition hover:bg-blue-500"
             >
-              Get Started Free
+              Start Free Trial
             </a>
             <a
-              href="#how-it-works"
-              className="rounded-xl border border-white/25 bg-white/10 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition hover:bg-white/20"
+              href="#live-demo"
+              className="rounded-lg border border-slate-700 bg-slate-900/70 px-7 py-3.5 text-sm font-semibold text-slate-200 backdrop-blur-md transition hover:border-slate-500 hover:bg-slate-800"
             >
-              See How It Works
+              Try Interactive Demo
             </a>
           </div>
-        </div>
-      </section>
-      <header className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 border-b border-white/10 px-6 py-5 text-sm">
-        <div className="flex items-center gap-2.5">
-          <span className="font-serif text-xl font-bold tracking-tight text-white">
-            LeadPilot
-          </span>
-          <span className="h-2.5 w-2.5 rounded-full bg-[#E85D4A]" />
-        </div>
 
+          {/* Trust Metrics Bar */}
+          <div className="mt-14 grid grid-cols-3 gap-8 border-t border-white/10 pt-8 text-center sm:gap-14">
+            <div>
+              <p className="text-2xl font-bold text-white sm:text-3xl">&lt; 5s</p>
+              <p className="mt-1 text-xs uppercase tracking-wider text-slate-400">Response Time</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white sm:text-3xl">3.4x</p>
+              <p className="mt-1 text-xs uppercase tracking-wider text-slate-400">Lead Conversion</p>
+            </div>
+            <div>
+              <p className="text-2xl font-bold text-white sm:text-3xl">24/7</p>
+              <p className="mt-1 text-xs uppercase tracking-wider text-slate-400">Automated Follow-Up</p>
+            </div>
+          </div>
+        </div>
+  </section>
         <nav className="flex flex-wrap items-center gap-6 text-[#D2D6DC]">
           <a href="#bot-in-action" className="transition hover:text-white">
             Bot in action
@@ -224,8 +236,6 @@ export default function LeadPilotLandingPage() {
             Open workspace →
           </Link>
         </nav>
-      </header>
-
       {/* Editorial Split Hero */}
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-14 md:grid-cols-12 md:py-20">
         <div className="space-y-6 md:col-span-6">
