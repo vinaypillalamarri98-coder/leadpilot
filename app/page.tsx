@@ -624,6 +624,20 @@ export default function LeadPilotLandingPage() {
           </ul>
         </div>
       </section>
+<section className="mx-auto max-w-5xl px-6 py-10">
+        <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#1F2327] shadow-xl">
+          <video
+            src="/leadpilot-ad.mp4"
+            autoPlay
+            loop
+            muted
+            playsInline
+            controls
+            preload="metadata"
+            className="h-auto w-full object-cover"
+          />
+        </div>
+      </section>      
     </div>
   );
 }
