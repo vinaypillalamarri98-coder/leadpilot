@@ -1,9 +1,23 @@
-"use server";
+﻿"use server";
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { analyzeLeadAndDraftReply } from "@/lib/gemini";
 import { sendNewLeadEmail } from "@/lib/resend";
+
+const PLAN_QUOTAS: Record<string, number> = {
+  starter: 1500,
+  growth: 5000,
+  pro: 15000,
+};
+
+function getExpiryDate(billingCycle: string): string {
+  const now = new Date();
+  const months =
+    billingCycle === "12m" ? 12 : billingCycle === "6m" ? 6 : 1;
+  now.setMonth(now.getMonth() + months);
+  return now.toISOString();
+}
 
 export async function saveBusinessProfile(formData: FormData) {
   const supabase = await createClient();
@@ -26,25 +40,50 @@ export async function saveBusinessProfile(formData: FormData) {
   ).trim();
   const whatsappEnabled = formData.get("whatsapp_enabled") === "on";
 
-  if (!name) throw new Error("Business name is required");
+  const rawPlan = String(formData.get("plan_tier") || "starter").toLowerCase();
+  const planTier = PLAN_QUOTAS[rawPlan] ? rawPlan : "starter";
+  const rawBilling = String(formData.get("billing_cycle") || "1m").toLowerCase();
+  const billingCycle = ["1m", "6m", "12m"].includes(rawBilling)
+    ? rawBilling
+    : "1m";
 
-  const payload = {
-    owner_id: user.id,
-    name,
-    industry: industry || null,
-    phone: phone || null,
-    tone,
-    knowledge_base: knowledgeBase || null,
-    whatsapp_phone_number_id: whatsappPhoneNumberId || null,
-    whatsapp_access_token: whatsappAccessToken || null,
-    whatsapp_enabled: whatsappEnabled,
-  };
+  if (!name) throw new Error("Business name is required");
 
   const { data: existing } = await supabase
     .from("businesses")
-    .select("id")
+    .select("id, plan_tier, billing_cycle, monthly_reply_limit, plan_expires_at")
     .eq("owner_id", user.id)
     .maybeSingle();
+
+  const payload = existing
+    ? {
+        owner_id: user.id,
+        name,
+        industry: industry || null,
+        phone: phone || null,
+        tone,
+        knowledge_base: knowledgeBase || null,
+        whatsapp_phone_number_id: whatsappPhoneNumberId || null,
+        whatsapp_access_token: whatsappAccessToken || null,
+        whatsapp_enabled: whatsappEnabled,
+      }
+    : {
+        owner_id: user.id,
+        name,
+        industry: industry || null,
+        phone: phone || null,
+        tone,
+        knowledge_base: knowledgeBase || null,
+        whatsapp_phone_number_id: whatsappPhoneNumberId || null,
+        whatsapp_access_token: whatsappAccessToken || null,
+        whatsapp_enabled: whatsappEnabled,
+        plan_tier: planTier,
+        billing_cycle: billingCycle,
+        subscription_status: "trial",
+        monthly_reply_limit: PLAN_QUOTAS[planTier],
+        monthly_replies_used: 0,
+        plan_expires_at: getExpiryDate(billingCycle),
+      };
 
   const { error } = existing
     ? await supabase.from("businesses").update(payload).eq("id", existing.id)

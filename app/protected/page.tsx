@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+﻿import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { saveBusinessProfile, createAndAnalyzeLead } from "@/app/actions";
@@ -9,7 +9,12 @@ import {
   type LeadItem,
 } from "@/components/realtime-leads-list";
 
-async function LeadPilotWorkspace() {
+async function LeadPilotWorkspace({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string; billing?: string }>;
+}) {
+  const resolvedParams = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -35,6 +40,11 @@ async function LeadPilotWorkspace() {
 
   const leads = (rawLeads ?? []) as LeadItem[];
 
+  const activePlan = (business?.plan_tier ?? resolvedParams.plan ?? "starter").toUpperCase();
+  const activeBilling = business?.billing_cycle ?? resolvedParams.billing ?? "1m";
+  const repliesUsed = business?.monthly_replies_used ?? 0;
+  const repliesLimit = business?.monthly_reply_limit ?? 1500;
+
   return (
     <div className="mx-auto max-w-5xl space-y-8 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4 border-b pb-4">
@@ -52,6 +62,28 @@ async function LeadPilotWorkspace() {
         </form>
       </div>
 
+      {/* Plan & AI Reply Quota */}
+      <section className="grid gap-4 rounded-lg border p-4 sm:grid-cols-3">
+        <div>
+          <p className="text-xs text-gray-500">Current Plan</p>
+          <p className="text-base font-semibold">
+            {activePlan} ({activeBilling})
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500">Monthly AI Replies Used</p>
+          <p className="text-base font-semibold">
+            {repliesUsed.toLocaleString("en-IN")} / {repliesLimit.toLocaleString("en-IN")}
+          </p>
+        </div>
+        <div>
+          <p className="text-xs text-gray-500">Status</p>
+          <p className="text-base font-semibold capitalize">
+            {business?.subscription_status ?? "trial"}
+          </p>
+        </div>
+      </section>
+
       {/* Business Profile */}
       <section className="space-y-4 rounded-lg border p-5">
         <div>
@@ -64,6 +96,17 @@ async function LeadPilotWorkspace() {
         </div>
 
         <form action={saveBusinessProfile} className="grid gap-4 sm:grid-cols-2">
+          <input
+            type="hidden"
+            name="plan_tier"
+            value={resolvedParams.plan ?? business?.plan_tier ?? "starter"}
+          />
+          <input
+            type="hidden"
+            name="billing_cycle"
+            value={resolvedParams.billing ?? business?.billing_cycle ?? "1m"}
+          />
+
           <div>
             <label className="mb-1 block text-sm font-medium">Business Name *</label>
             <input
@@ -242,7 +285,11 @@ async function LeadPilotWorkspace() {
   );
 }
 
-export default function ProtectedPage() {
+export default function ProtectedPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ plan?: string; billing?: string }>;
+}) {
   return (
     <Suspense
       fallback={
@@ -251,7 +298,7 @@ export default function ProtectedPage() {
         </div>
       }
     >
-      <LeadPilotWorkspace />
+      <LeadPilotWorkspace searchParams={searchParams} />
     </Suspense>
   );
 }
