@@ -348,7 +348,7 @@ export default function HomePage() {
       </section>
 
       <footer className="border-t border-slate-900 px-6 py-8 max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4 text-xs text-slate-400">
-        <span>© {new Date().getFullYear()} LeadPilot. All rights reserved.</span>
+        <span>© 2026 LeadPilot. All rights reserved.</span>
         <div className="flex gap-6">
           <Link href="/privacy-policy" className="hover:text-white">
             Privacy Policy
