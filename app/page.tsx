@@ -4,7 +4,7 @@ type BillingCycle = "1m" | "6m" | "12m"; type PlanTier = "starter" | "growth" | 
 interface ExtractedLeadData { serviceNeeded: string; budgetOrQuantity: string; urgency: "High" | "Medium" | "Low"; preferredTime: string; location: string; leadScore: number; }
 interface ScenarioPreset { key: ScenarioKey; label: string; businessName: string; industry: string; tone: string; knowledgeBaseSummary: string; sampleInquiries: string[]; extracted: ExtractedLeadData; draftReply: string; }
 interface PricingPlanConfig { tier: PlanTier; name: string; tagline: string; monthlyQuota: number; quotaLabel: string; monthlyPriceInr: Record<BillingCycle, number>; popular?: boolean; highlights: string[]; }
-const SCENARIO_PRESETS: Record<ScenarioKey, ScenarioPreset> = { clinic: { key: "clinic", label: "Dental & Skin Clinic", businessName: "CareWell Dental & Skin Clinic", industry: "Healthcare / Dental & Dermatology", tone: "Warm, reassuring & clinical", knowledgeBaseSummary: "Open Mon-Sat 10 AM - 8 PM (Sun closed). Dental checkup & cleaning ₹600, Root Canal from ₹4,500, Skin consultation ₹500.", sampleInquiries: [ "Hi, I have sharp tooth pain on my lower left side since yesterday and want a checkup + RCT estimate around ₹5,000. Can I come tomorrow evening around 6 PM?", "Hello doctor, looking for skin consultation and pigmentation check around ₹1,500 budget. Any slot this Friday afternoon?", "Need urgent scaling & polishing before a family wedding next week, budget around ₹1,200.", ], extracted: { serviceNeeded: "Dental Checkup & Root Canal (RCT)", budgetOrQuantity: "₹5,000 budget (1 patient)", urgency: "High", preferredTime: "Tomorrow, ~6:00 PM", location: "Local Clinic Catchment", leadScore: 93, }, draftReply: "Namaste! We are sorry to hear about your tooth pain and can prioritize you right away. Routine checkup & cleaning is ₹600, and Root Canal Treatment starts from ₹4,500 after clinical evaluation. We have an opening tomorrow around 6:00 PM at CareWell Dental & Skin Clinic—would you like us to reserve that slot for you?", }, exports: { key: "exports", label: "Exports & Traders", businessName: "Surya Exports & Imports", industry: "B2B Trade, Packaging & Agro-Exports", tone: "Sharp, commercial & responsive", knowledgeBaseSummary: "Supplying spices, agro-commodities, and export-grade packaging. Quotes depend on SKU, quantity/MOQ, and FOB/CIF port terms.", sampleInquiries: [ "Hello team, we need 500 cartons of export-grade corrugated packaging & turmeric quote to Nhava Sheva / Dubai CIF next week. Budget around ₹3.5L.", "Looking for wholesale rate and MOQ for 2,000 kg cumin seeds delivered to Mumbai warehouse by next Tuesday.", "Can you share CIF pricing for 250 cartons of packaging material for shipment this month?", ], extracted: { serviceNeeded: "500 Cartons Export Packaging + Turmeric Quote", budgetOrQuantity: "500 cartons / ₹3,50,000 approx.", urgency: "High", preferredTime: "Next Week Dispatch", location: "Nhava Sheva / Dubai (CIF)", leadScore: 96, }, draftReply: "Hello! Thank you for contacting Surya Exports & Imports. For 500 export-grade cartons and commodity dispatch next week, we can prepare a tailored CIF quote based on exact specs, MOQ, and destination port. Could you share your required dimensions/HSN details and target dispatch date so our team can send a quote quickly?", }, salon: { key: "salon", label: "Salons & Academies", businessName: "Aura Salon & Academy", industry: "Beauty, Grooming & Bridal Studio", tone: "Polite, stylish & helpful", knowledgeBaseSummary: "Open Tue-Sun 10:30 AM - 8:30 PM (Closed Mon). Haircut & styling from ₹499, Facial from ₹1,200, Bridal & event packages custom.", sampleInquiries: [ "Hey! Looking for a party makeup + hair styling combo for a wedding function this Saturday morning around 11 AM, budget around ₹4,500.", "Hi, what is the price for a haircut and cleanup for 2 people this Sunday around 4 PM?", "Need bridal makeup trial booking next week, budget around ₹8,000.", ], extracted: { serviceNeeded: "Party Makeup + Hair Styling Combo", budgetOrQuantity: "₹4,500 budget (1 booking)", urgency: "Medium", preferredTime: "Saturday, ~11:00 AM", location: "Studio Appointment", leadScore: 87, }, draftReply: "Hi there! We would love to get you ready for Saturday's wedding function at Aura Salon & Academy. Our studio opens at 10:30 AM, and we can tailor a party makeup and hair styling look around your ₹4,500 budget. Shall we block the 11:00 AM slot this Saturday for you?", }, };
+const SCENARIO_PRESETS: Record<ScenarioKey, ScenarioPreset> = { clinic: { key: "clinic", label: "Dental & Skin Clinic", businessName: "CareWell Dental & Skin Clinic", industry: "Healthcare • Dental & Dermatology", tone: "Warm, reassuring & clinical", knowledgeBaseSummary: "Mon–Sat 10 AM – 8 PM (Sun closed) • Checkup & cleaning ₹600 • Root Canal from ₹4,500 • Skin consult ₹500", sampleInquiries: [ "Hi, I have sharp tooth pain on my lower left side since yesterday and want a checkup + RCT estimate around ₹5,000. Can I come tomorrow evening around 6 PM?", "Hello doctor, looking for skin consultation and pigmentation check around ₹1,500 budget. Any slot this Friday afternoon?", "Need urgent scaling & polishing before a family wedding next week, budget around ₹1,200.", ], extracted: { serviceNeeded: "Dental Checkup & Root Canal (RCT)", budgetOrQuantity: "₹5,000 budget • 1 patient", urgency: "High", preferredTime: "Tomorrow, ~6:00 PM", location: "Local Clinic Catchment", leadScore: 93, }, draftReply: "Namaste! We are sorry to hear about your tooth pain and can prioritize you right away. Routine checkup & cleaning is ₹600, and Root Canal Treatment starts from ₹4,500 after clinical evaluation. We have an opening tomorrow around 6:00 PM at CareWell Dental & Skin Clinic—would you like us to reserve that slot for you?", }, exports: { key: "exports", label: "Exports & Traders", businessName: "Surya Exports & Imports", industry: "B2B Trade • Packaging & Agro-Exports", tone: "Sharp, commercial & responsive", knowledgeBaseSummary: "Spices, agro-commodities & export-grade packaging • Quotes tailored to SKU, MOQ & FOB/CIF port terms", sampleInquiries: [ "Hello team, we need 500 cartons of export-grade corrugated packaging & turmeric quote to Nhava Sheva / Dubai CIF next week. Budget around ₹3.5L.", "Looking for wholesale rate and MOQ for 2,000 kg cumin seeds delivered to Mumbai warehouse by next Tuesday.", "Can you share CIF pricing for 250 cartons of packaging material for shipment this month?", ], extracted: { serviceNeeded: "500 Cartons Export Packaging + Turmeric", budgetOrQuantity: "500 cartons • ~₹3,50,000", urgency: "High", preferredTime: "Next Week Dispatch", location: "Nhava Sheva / Dubai (CIF)", leadScore: 96, }, draftReply: "Hello! Thank you for contacting Surya Exports & Imports. For 500 export-grade cartons and commodity dispatch next week, we can prepare a tailored CIF quote based on exact specs, MOQ, and destination port. Could you share your required dimensions/HSN details and target dispatch date so our team can send a quote quickly?", }, salon: { key: "salon", label: "Salons & Academies", businessName: "Aura Salon & Academy", industry: "Beauty, Grooming & Bridal Studio", tone: "Polite, stylish & helpful", knowledgeBaseSummary: "Tue–Sun 10:30 AM – 8:30 PM (Closed Mon) • Haircut & styling from ₹499 • Facial from ₹1,200 • Bridal custom", sampleInquiries: [ "Hey! Looking for a party makeup + hair styling combo for a wedding function this Saturday morning around 11 AM, budget around ₹4,500.", "Hi, what is the price for a haircut and cleanup for 2 people this Sunday around 4 PM?", "Need bridal makeup trial booking next week, budget around ₹8,000.", ], extracted: { serviceNeeded: "Party Makeup + Hair Styling Combo", budgetOrQuantity: "₹4,500 budget • 1 booking", urgency: "Medium", preferredTime: "Saturday, ~11:00 AM", location: "Studio Appointment", leadScore: 87, }, draftReply: "Hi there! We would love to get you ready for Saturday's wedding function at Aura Salon & Academy. Our studio opens at 10:30 AM, and we can tailor a party makeup and hair styling look around your ₹4,500 budget. Shall we block the 11:00 AM slot this Saturday for you?", }, };
 const PRICING_PLANS: PricingPlanConfig[] = [ { tier: "starter", name: "Starter", tagline: "Ideal for single-location clinics, salons & shops starting with AI lead qualification and replies.", monthlyQuota: 1500, quotaLabel: "1,500 AI replies / month", monthlyPriceInr: { "1m": 999, "6m": 849, "12m": 699, }, highlights: [ "1,500 monthly AI replies quota", "Automatic lead extraction & intent scoring", "Custom knowledge base & reply tone", "Draft replies ready for review & sending", ], }, { tier: "growth", name: "Growth", tagline: "Built for busy clinics, traders & multi-service teams handling steady daily inquiries.", monthlyQuota: 5000, quotaLabel: "5,000 AI replies / month", monthlyPriceInr: { "1m": 2499, "6m": 2099, "12m": 1749, }, popular: true, highlights: [ "5,000 monthly AI replies quota", "Priority lead qualification & scoring", "Detailed pricing, timings & SOP grounding", "Live quota counter & lead pipeline tracking", ], }, { tier: "pro", name: "Pro", tagline: "High-volume capacity for exporters, multi-branch operators & high-inquiry businesses.", monthlyQuota: 15000, quotaLabel: "15,000 AI replies / month", monthlyPriceInr: { "1m": 5499, "6m": 4599, "12m": 3899, }, highlights: [ "15,000 monthly AI replies quota", "High-velocity lead scoring & qualification", "Rich multi-service & catalog knowledge base", "Built for scaling multi-inquiry teams", ], }, ];
 function buildCustomLeadSimulation( preset: ScenarioPreset, inquiryText: string ): { extracted: ExtractedLeadData; draftReply: string } { try { const trimmed = inquiryText.trim(); const lower = trimmed.toLowerCase();
 const isUrgent = [
@@ -65,123 +65,135 @@ const handlePresetChange = (key: ScenarioKey) => { setSelectedScenario(key); set
 const handleSampleInquiryClick = (sampleText: string) => { setIsCustomMode(false); setCustomInput(""); setActiveInquiry(sampleText); setStep(1); setAutoRunLoop(true); };
 const handleCustomSubmit = (e: React.FormEvent) => { e.preventDefault(); const cleaned = customInput.trim(); if (!cleaned) return; setActiveInquiry(cleaned); setIsCustomMode(true); setStep(1); setAutoRunLoop(true); };
 const handleReplay = useCallback(() => { setStep(1); }, []);
-useEffect(() => { if (!autoRunLoop) return; const timeoutId = setTimeout( () => { setStep((prev) => (prev < 3 ? prev + 1 : 1)); }, step === 3 ? 3800 : 1400 ); return () => clearTimeout(timeoutId); }, [autoRunLoop, step]);
-const billingCycleLabel: Record<BillingCycle, string> = { "1m": "1m (Monthly)", "6m": "6m (Half-Yearly)", "12m": "12m (Yearly)", };
-const billingBadge: Record<BillingCycle, string | null> = { "1m": null, "6m": "Popular • Save ~15%", "12m": "Best Value • Save ~30%", };
-return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
-{/* Ambient background glow */}
-<div className="pointer-events-none fixed inset-0 overflow-hidden">
-<div className="absolute -top-32 left-1/2 h-96 w-[44rem] -translate-x-1/2 rounded-full bg-emerald-500/10 blur-3xl" />
-<div className="absolute top-1/3 right-0 h-80 w-80 rounded-full bg-cyan-500/10 blur-3xl" />
+useEffect(() => { if (!autoRunLoop) return; const timeoutId = setTimeout( () => { setStep((prev) => (prev < 3 ? prev + 1 : 1)); }, step === 3 ? 4000 : 1450 ); return () => clearTimeout(timeoutId); }, [autoRunLoop, step]);
+const billingCycleLabel: Record<BillingCycle, string> = { "1m": "Monthly (1m)", "6m": "Half-Yearly (6m)", "12m": "Annual (12m)", };
+const billingBadge: Record<BillingCycle, string | null> = { "1m": null, "6m": "Save ~15%", "12m": "Save ~30%", };
+return ( <div className="relative min-h-screen overflow-x-clip bg-[#070b14] text-slate-100 antialiased selection:bg-emerald-400/25 selection:text-emerald-200">
+{/* Subtle editorial ambient light & grain veil */}
+<div
+aria-hidden="true"
+className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
+>
+<div className="absolute -top-40 left-1/2 h-[34rem] w-[62rem] -translate-x-1/2 rounded-full bg-emerald-500/[0.07] blur-[140px]" />
+<div className="absolute top-[38%] -right-32 h-[28rem] w-[28rem] rounded-full bg-teal-400/[0.05] blur-[130px]" />
+<div className="absolute bottom-0 -left-32 h-[26rem] w-[26rem] rounded-full bg-sky-400/[0.04] blur-[130px]" />
 </div>
   {/* Header */}
-  <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#060913]/85 backdrop-blur-md">
-    <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3.5 sm:px-6 lg:px-8">
-      <a href="#" className="flex items-center gap-2.5">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-400/35 bg-emerald-500/15 text-emerald-400">
-          <Bot className="h-5 w-5" />
+  <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#070b14]/75 backdrop-blur-xl">
+    <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-4 sm:px-8">
+      <a href="#" className="group flex items-center gap-3">
+        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-400/25 bg-emerald-400/[0.08] text-emerald-300 transition duration-300 group-hover:border-emerald-400/45 group-hover:bg-emerald-400/[0.14]">
+          <Bot className="h-4 w-4" />
         </div>
-        <div>
-          <span className="text-lg font-bold tracking-tight text-white">
+        <div className="flex items-baseline gap-2.5">
+          <span className="text-base font-semibold tracking-tight text-white sm:text-lg">
             LeadPilot
           </span>
-          <span className="ml-2 hidden rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-emerald-300 sm:inline-block">
-            AI Lead Qualification &amp; Replies
+          <span className="hidden rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-0.5 text-[11px] font-medium tracking-wide text-slate-400 sm:inline-block">
+            Lead Intelligence
           </span>
         </div>
       </a>
 
-      <nav className="hidden items-center gap-7 text-sm text-slate-300 md:flex">
-        <a href="#bot-in-action" className="transition hover:text-emerald-400">
+      <nav className="hidden items-center gap-8 text-[13px] font-medium text-slate-400 md:flex">
+        <a
+          href="#bot-in-action"
+          className="transition-colors duration-200 hover:text-white"
+        >
           Bot in Action
         </a>
-        <a href="#comparison" className="transition hover:text-emerald-400">
-          LeadPilot vs. Generic Bots
+        <a
+          href="#comparison"
+          className="transition-colors duration-200 hover:text-white"
+        >
+          Comparison
         </a>
-        <a href="#pricing" className="transition hover:text-emerald-400">
+        <a
+          href="#pricing"
+          className="transition-colors duration-200 hover:text-white"
+        >
           Pricing &amp; Terms
         </a>
       </nav>
 
       <a
         href={`/protected?plan=growth&billing=${billingCycle}`}
-        className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-500 px-4 py-2 text-xs font-semibold text-slate-950 shadow-lg shadow-emerald-500/20 transition hover:bg-emerald-400 sm:text-sm"
+        className="inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/[0.12] px-4 py-2 text-xs font-medium text-emerald-200 transition duration-200 hover:border-emerald-300/60 hover:bg-emerald-400/[0.2] hover:text-white sm:text-[13px]"
       >
-        Open Workspace
-        <ArrowRight className="h-4 w-4" />
+        <span>Open Workspace</span>
+        <ArrowRight className="h-3.5 w-3.5" />
       </a>
     </div>
   </header>
 
   <main className="relative z-10">
     {/* Hero */}
-    <section className="mx-auto max-w-7xl px-4 pt-10 pb-8 sm:px-6 lg:px-8 lg:pt-14">
-      <div className="mx-auto max-w-4xl text-center">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1.5 text-xs font-medium text-emerald-300">
-          <Sparkles className="h-3.5 w-3.5 text-emerald-400" />
-          Designed for Indian Clinics, Exporters, Traders &amp; Salons
+    <section className="mx-auto max-w-6xl px-5 pt-16 pb-10 sm:px-8 lg:pt-24 lg:pb-12">
+      <div className="mx-auto max-w-3xl text-center">
+        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1.5 text-xs font-medium tracking-wide text-slate-300">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+          Crafted for Indian Clinics, Exporters, Traders &amp; Salons
         </div>
 
-        <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl">
-          Qualify Leads Faster &amp; Draft{" "}
-          <span className="bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text text-transparent">
-            Context-Smart Replies
-          </span>{" "}
-          Automatically
+        <h1 className="text-4xl font-semibold tracking-[-0.03em] text-white sm:text-5xl lg:text-[3.5rem] lg:leading-[1.08]">
+          Qualify every inquiry.{" "}
+          <span className="bg-gradient-to-r from-emerald-200 via-teal-200 to-sky-200 bg-clip-text font-normal italic text-transparent">
+            Reply with quiet precision.
+          </span>
         </h1>
 
-        <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-slate-300 sm:text-base lg:text-lg">
-          LeadPilot turns messy customer inquiries into structured leads with
-          service needs, budget or quantity, urgency, preferred time, and a
-          lead score—while drafting replies grounded in your business
-          knowledge base and tone.
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed font-normal text-slate-400 sm:text-[17px]">
+          LeadPilot structures raw customer messages into clear service
+          needs, budget or quantity, urgency, preferred timing, and a lead
+          score—drafting replies shaped by your business knowledge base and
+          voice.
         </p>
       </div>
     </section>
 
-    {/* 1. PROMINENT INTERACTIVE "BOT IN ACTION" SHOWCASE */}
+    {/* 1. AESTHETIC INTERACTIVE "BOT IN ACTION" SHOWCASE */}
     <section
       id="bot-in-action"
-      className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-10"
+      className="mx-auto max-w-6xl px-5 py-6 sm:px-8 lg:py-8"
     >
-      <div className="rounded-3xl border border-slate-800 bg-gradient-to-b from-slate-900/95 to-[#090f1c] p-5 shadow-2xl sm:p-8">
-        <div className="flex flex-col justify-between gap-4 border-b border-slate-800 pb-6 lg:flex-row lg:items-center">
+      <div className="rounded-[28px] border border-white/[0.08] bg-white/[0.025] p-5 shadow-[0_24px_80px_-24px_rgba(0,0,0,0.75)] backdrop-blur-xl sm:p-8 lg:p-10">
+        <div className="flex flex-col justify-between gap-5 border-b border-white/[0.07] pb-7 lg:flex-row lg:items-end">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-emerald-400">
-              <span className="relative flex h-2.5 w-2.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+            <div className="inline-flex items-center gap-2 text-[11px] font-medium tracking-[0.14em] text-emerald-300/90 uppercase">
+              <span className="relative flex h-2 w-2">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400/70" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
               </span>
-              Bot in Action • Interactive Live Demo
+              Bot in Action • Interactive Preview
             </div>
-            <h2 className="mt-1.5 text-2xl font-bold text-white sm:text-3xl">
-              Watch How LeadPilot Reads, Scores &amp; Replies to Inquiries
+            <h2 className="mt-2 text-2xl font-semibold tracking-[-0.02em] text-white sm:text-3xl">
+              See a single message become a qualified lead
             </h2>
-            <p className="mt-1 text-sm text-slate-400">
-              Pick a business preset, click a sample inquiry or type your own,
-              and watch the animated step-by-step execution.
+            <p className="mt-1.5 text-sm text-slate-400">
+              Switch business presets, click a sample inquiry, or type your
+              own message to watch each stage unfold.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2.5">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setAutoRunLoop((prev) => !prev)}
-              className={`inline-flex items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-semibold transition sm:text-sm ${
+              className={`inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-xs font-medium transition duration-200 ${
                 autoRunLoop
-                  ? "border-emerald-400/60 bg-emerald-500/15 text-emerald-300"
-                  : "border-slate-700 bg-slate-800/80 text-slate-200 hover:border-emerald-400/40"
+                  ? "border-emerald-400/35 bg-emerald-400/[0.1] text-emerald-200"
+                  : "border-white/[0.08] bg-white/[0.03] text-slate-300 hover:border-white/[0.16] hover:text-white"
               }`}
             >
               {autoRunLoop ? (
                 <>
-                  <Pause className="h-4 w-4 text-emerald-400" />
-                  Watch Auto-Run Loop: ON
+                  <Pause className="h-3.5 w-3.5 text-emerald-300" />
+                  <span>Auto-Loop On</span>
                 </>
               ) : (
                 <>
-                  <Play className="h-4 w-4 text-emerald-400" />
-                  Watch Auto-Run Loop: OFF
+                  <Play className="h-3.5 w-3.5 text-slate-300" />
+                  <span>Auto-Loop Paused</span>
                 </>
               )}
             </button>
@@ -189,16 +201,16 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
             <button
               type="button"
               onClick={handleReplay}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-800/80 px-3.5 py-2.5 text-xs font-semibold text-slate-200 transition hover:border-cyan-400/50 hover:text-white sm:text-sm"
+              className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-2 text-xs font-medium text-slate-300 transition duration-200 hover:border-white/[0.16] hover:text-white"
             >
-              <RotateCcw className="h-4 w-4 text-cyan-400" />
-              Replay
+              <RotateCcw className="h-3.5 w-3.5 text-slate-400" />
+              <span>Replay</span>
             </button>
           </div>
         </div>
 
-        {/* Indian SMB Preset Selector */}
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        {/* Business Preset Selector */}
+        <div className="mt-7 grid grid-cols-1 gap-3.5 sm:grid-cols-3">
           {(Object.keys(SCENARIO_PRESETS) as ScenarioKey[]).map((key) => {
             const preset = SCENARIO_PRESETS[key];
             const active = selectedScenario === key;
@@ -207,23 +219,25 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
                 key={key}
                 type="button"
                 onClick={() => handlePresetChange(key)}
-                className={`rounded-2xl border p-4 text-left transition ${
+                className={`group rounded-2xl border p-4 text-left transition duration-200 ${
                   active
-                    ? "border-emerald-400 bg-emerald-500/15 shadow-lg shadow-emerald-500/10"
-                    : "border-slate-800 bg-slate-950/60 hover:border-slate-700"
+                    ? "border-emerald-400/40 bg-emerald-400/[0.07]"
+                    : "border-white/[0.06] bg-white/[0.015] hover:border-white/[0.14] hover:bg-white/[0.03]"
                 }`}
               >
-                <div className="flex items-center justify-between">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-emerald-300">
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className={`text-[11px] font-medium tracking-wider uppercase ${
+                      active ? "text-emerald-300" : "text-slate-400"
+                    }`}
+                  >
                     {preset.label}
                   </span>
                   {active && (
-                    <span className="rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] font-bold text-emerald-300">
-                      ACTIVE
-                    </span>
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                   )}
                 </div>
-                <p className="mt-1 text-sm font-bold text-white">
+                <p className="mt-1.5 text-sm font-medium text-white">
                   {preset.businessName}
                 </p>
                 <p className="mt-0.5 text-xs text-slate-400">
@@ -235,10 +249,9 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
         </div>
 
         {/* Sample Inquiry Chips */}
-        <div className="mt-5">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-            Sample Customer Inquiries for {currentPreset.businessName} (Click to
-            test):
+        <div className="mt-6">
+          <p className="mb-2.5 text-[11px] font-medium tracking-[0.12em] text-slate-400 uppercase">
+            Sample inquiries for {currentPreset.businessName}
           </p>
           <div className="flex flex-wrap gap-2">
             {currentPreset.sampleInquiries.map((sample, idx) => {
@@ -248,64 +261,64 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
                   key={idx}
                   type="button"
                   onClick={() => handleSampleInquiryClick(sample)}
-                  className={`max-w-full rounded-xl border px-3.5 py-2 text-left text-xs transition ${
+                  className={`max-w-full rounded-full border px-3.5 py-2 text-left text-xs transition duration-200 ${
                     isCurrent
-                      ? "border-cyan-400/70 bg-cyan-500/15 text-cyan-200"
-                      : "border-slate-800 bg-slate-900/70 text-slate-300 hover:border-slate-700 hover:text-white"
+                      ? "border-emerald-400/40 bg-emerald-400/[0.1] text-emerald-100"
+                      : "border-white/[0.07] bg-white/[0.02] text-slate-300 hover:border-white/[0.15] hover:text-white"
                   }`}
                 >
-                  Sample {idx + 1}: &ldquo;
-                  {sample.length > 72
-                    ? `${sample.slice(0, 72).trim()}...`
+                  <span className="text-slate-500">0{idx + 1}</span> · “
+                  {sample.length > 68
+                    ? `${sample.slice(0, 68).trim()}...`
                     : sample}
-                  &rdquo;
+                  ”
                 </button>
               );
             })}
           </div>
         </div>
 
-        {/* Custom Inquiry Form */}
+        {/* Custom Inquiry Input */}
         <form
           onSubmit={handleCustomSubmit}
           className="mt-4 flex flex-col gap-2.5 sm:flex-row"
         >
           <div className="relative flex-1">
-            <MessageSquare className="pointer-events-none absolute top-3.5 left-3.5 h-4 w-4 text-slate-400" />
+            <MessageSquare className="pointer-events-none absolute top-3.5 left-4 h-4 w-4 text-slate-500" />
             <input
               type="text"
               value={customInput}
               onChange={(e) => setCustomInput(e.target.value)}
-              placeholder="Or type your own customer message (e.g., 'Need 100 boxes or appointment tomorrow at 5 PM for ₹2500')..."
-              className="w-full rounded-xl border border-slate-700 bg-slate-950/90 py-3 pr-4 pl-10 text-sm text-white placeholder-slate-500 focus:border-emerald-400 focus:outline-none"
+              placeholder="Type a custom customer message (e.g., 'Need root canal estimate around ₹4,500 tomorrow evening')..."
+              className="w-full rounded-2xl border border-white/[0.08] bg-[#060911]/80 py-3 pr-4 pl-11 text-sm text-white placeholder-slate-500 transition focus:border-emerald-400/50 focus:outline-none"
             />
           </div>
           <button
             type="submit"
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-500 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-emerald-400"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-400/35 bg-emerald-400/[0.14] px-5 py-3 text-sm font-medium text-emerald-200 transition duration-200 hover:border-emerald-300/60 hover:bg-emerald-400/[0.22] hover:text-white"
           >
-            <Send className="h-4 w-4" />
-            Run Live Bot
+            <Send className="h-3.5 w-3.5" />
+            <span>Simulate</span>
           </button>
         </form>
 
-        {/* Stepper Bar */}
-        <div className="mt-6 grid grid-cols-3 gap-2.5 sm:gap-4">
+        {/* Step Selector Pills */}
+        <div className="mt-7 grid grid-cols-3 gap-2.5 sm:gap-4">
           {[
             {
               num: 1,
-              title: "Step 1: Incoming Message",
-              desc: "Customer inquiry arrives",
+              title: "01 · Incoming Inquiry",
+              desc: "Raw message & business context",
             },
             {
               num: 2,
-              title: "Step 2: Extracted Lead Fields",
-              desc: "Qualification & lead score",
+              title: "02 · Lead Qualification",
+              desc: "Fields extracted & intent scored",
             },
             {
               num: 3,
-              title: "Step 3: Tailored Reply Draft",
-              desc: "Grounded in KB & tone",
+              title: "03 · Tailored Draft",
+              desc: "Grounded reply ready to send",
             },
           ].map((s) => {
             const activeStep = step === s.num;
@@ -318,15 +331,15 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
                   setAutoRunLoop(false);
                   setStep(s.num);
                 }}
-                className={`rounded-2xl border p-3 text-left transition ${
+                className={`rounded-2xl border px-3.5 py-3 text-left transition duration-200 sm:px-4 ${
                   activeStep
-                    ? "border-emerald-400 bg-emerald-500/15 ring-1 ring-emerald-400/40"
+                    ? "border-emerald-400/45 bg-emerald-400/[0.09]"
                     : doneStep
-                      ? "border-emerald-500/35 bg-slate-900/80"
-                      : "border-slate-800 bg-slate-950/50 opacity-60"
+                      ? "border-white/[0.08] bg-white/[0.025] hover:border-white/[0.15]"
+                      : "border-white/[0.05] bg-white/[0.01] opacity-55"
                 }`}
               >
-                <p className="text-xs font-bold text-white sm:text-sm">
+                <p className="text-xs font-medium text-white sm:text-sm">
                   {s.title}
                 </p>
                 <p className="mt-0.5 hidden text-xs text-slate-400 sm:block">
@@ -337,36 +350,36 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
           })}
         </div>
 
-        {/* 3-Stage Animated Execution Panels */}
+        {/* 3-Column Stage Cards */}
         <div className="mt-6 grid grid-cols-1 gap-5 lg:grid-cols-3">
-          {/* Stage 1: Incoming Message */}
+          {/* Stage 1 */}
           <div
-            className={`flex flex-col justify-between rounded-2xl border p-5 transition-all duration-300 ${
+            className={`flex flex-col justify-between rounded-2xl border p-5 transition duration-300 ${
               step === 1
-                ? "border-cyan-400/70 bg-slate-950 shadow-lg shadow-cyan-500/10"
-                : "border-slate-800 bg-slate-950/80"
+                ? "border-white/[0.18] bg-[#090e1a]"
+                : "border-white/[0.07] bg-[#080c16]/80"
             }`}
           >
             <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">
-                  1. Incoming Message
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-medium tracking-[0.12em] text-slate-300 uppercase">
+                  Incoming Message
                 </span>
-                <span className="rounded-md bg-slate-800 px-2 py-0.5 text-[11px] text-slate-300">
-                  {isCustomMode ? "Custom Input" : "Customer Chat"}
+                <span className="rounded-full border border-white/[0.07] bg-white/[0.03] px-2.5 py-0.5 text-[11px] text-slate-400">
+                  {isCustomMode ? "Custom" : "Inquiry"}
                 </span>
               </div>
 
-              <div className="mt-4 rounded-2xl rounded-tl-none border border-slate-800 bg-slate-900 p-4 text-sm leading-relaxed text-slate-100">
-                &ldquo;{activeInquiry}&rdquo;
+              <div className="mt-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] p-4 text-sm leading-relaxed text-slate-200">
+                “{activeInquiry}”
               </div>
 
-              <div className="mt-4 rounded-xl border border-slate-800/90 bg-slate-900/50 p-3.5">
-                <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                  Business Knowledge Base &amp; Tone
+              <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.015] p-3.5">
+                <p className="text-[11px] font-medium tracking-wider text-slate-400 uppercase">
+                  Knowledge Base &amp; Tone
                 </p>
-                <p className="mt-1 text-xs font-semibold text-emerald-300">
-                  {currentPreset.businessName} • Tone: {currentPreset.tone}
+                <p className="mt-1 text-xs font-medium text-emerald-200/90">
+                  {currentPreset.businessName} · {currentPreset.tone}
                 </p>
                 <p className="mt-1 text-xs leading-relaxed text-slate-400">
                   {currentPreset.knowledgeBaseSummary}
@@ -374,82 +387,84 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
-              <span>Channel: WhatsApp / Web</span>
-              <span className="font-semibold text-cyan-300">
-                {step >= 1 ? "Captured ✓" : "Waiting"}
+            <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs text-slate-400">
+              <span>WhatsApp / Web</span>
+              <span className="text-slate-300">
+                {step >= 1 ? "Received" : "Pending"}
               </span>
             </div>
           </div>
 
-          {/* Stage 2: Extracted Lead Fields + Score */}
+          {/* Stage 2 */}
           <div
-            className={`flex flex-col justify-between rounded-2xl border p-5 transition-all duration-300 ${
+            className={`flex flex-col justify-between rounded-2xl border p-5 transition duration-300 ${
               step >= 2
                 ? step === 2
-                  ? "border-emerald-400/80 bg-slate-950 shadow-lg shadow-emerald-500/10 opacity-100"
-                  : "border-emerald-500/35 bg-slate-950/90 opacity-100"
-                : "border-slate-800/70 bg-slate-950/40 opacity-50"
+                  ? "border-emerald-400/45 bg-[#090e1a] opacity-100"
+                  : "border-white/[0.09] bg-[#080c16]/90 opacity-100"
+                : "border-white/[0.05] bg-[#080c16]/50 opacity-45"
             }`}
           >
             <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                  2. Extracted Lead Fields
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-medium tracking-[0.12em] text-emerald-300 uppercase">
+                  Extracted Lead
                 </span>
-                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/15 px-2.5 py-0.5 text-xs font-bold text-emerald-300">
-                  <TrendingUp className="h-3.5 w-3.5" />
-                  Score: {simulationResult.extracted.leadScore}/100
+                <span className="inline-flex items-center gap-1 rounded-full border border-emerald-400/25 bg-emerald-400/[0.09] px-2.5 py-0.5 text-xs font-medium text-emerald-200">
+                  <TrendingUp className="h-3 w-3" />
+                  {simulationResult.extracted.leadScore}/100
                 </span>
               </div>
 
               <div className="mt-4 space-y-2.5">
-                <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3">
-                  <p className="text-[11px] text-slate-400">Service Needed</p>
-                  <p className="mt-0.5 text-sm font-semibold text-white">
+                <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                  <p className="text-[11px] text-slate-400">
+                    Service Needed
+                  </p>
+                  <p className="mt-0.5 text-sm font-medium text-white">
                     {simulationResult.extracted.serviceNeeded}
                   </p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3">
+                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
                     <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <Package className="h-3 w-3 text-emerald-400" />
+                      <Package className="h-3 w-3 text-slate-400" />
                       Budget / Qty
                     </p>
-                    <p className="mt-0.5 text-xs font-semibold text-white">
+                    <p className="mt-0.5 text-xs font-medium text-slate-200">
                       {simulationResult.extracted.budgetOrQuantity}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3">
+                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
                     <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <Zap className="h-3 w-3 text-amber-400" />
+                      <Zap className="h-3 w-3 text-amber-300/80" />
                       Urgency
                     </p>
-                    <p className="mt-0.5 text-xs font-semibold text-amber-300">
+                    <p className="mt-0.5 text-xs font-medium text-amber-200/90">
                       {simulationResult.extracted.urgency}
                     </p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3">
+                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
                     <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <Clock className="h-3 w-3 text-cyan-400" />
+                      <Clock className="h-3 w-3 text-slate-400" />
                       Preferred Time
                     </p>
-                    <p className="mt-0.5 text-xs font-semibold text-slate-200">
+                    <p className="mt-0.5 text-xs font-medium text-slate-200">
                       {simulationResult.extracted.preferredTime}
                     </p>
                   </div>
 
-                  <div className="rounded-xl border border-slate-800 bg-slate-900/75 p-3">
+                  <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
                     <p className="flex items-center gap-1 text-[11px] text-slate-400">
-                      <MapPin className="h-3 w-3 text-rose-400" />
+                      <MapPin className="h-3 w-3 text-slate-400" />
                       Location / Terms
                     </p>
-                    <p className="mt-0.5 text-xs font-semibold text-slate-200">
+                    <p className="mt-0.5 text-xs font-medium text-slate-200">
                       {simulationResult.extracted.location}
                     </p>
                   </div>
@@ -457,55 +472,55 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-3 text-xs text-slate-400">
-              <span>Lead Qualification</span>
-              <span className="font-semibold text-emerald-300">
-                {step >= 2 ? "Qualified ✓" : "Extracting..."}
+            <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs text-slate-400">
+              <span>Qualification</span>
+              <span className="text-emerald-300/90">
+                {step >= 2 ? "Structured" : "Analyzing"}
               </span>
             </div>
           </div>
 
-          {/* Stage 3: Tailored Reply Draft */}
+          {/* Stage 3 */}
           <div
-            className={`flex flex-col justify-between rounded-2xl border p-5 transition-all duration-300 ${
+            className={`flex flex-col justify-between rounded-2xl border p-5 transition duration-300 ${
               step >= 3
-                ? "border-teal-400/70 bg-slate-950 shadow-lg shadow-teal-500/10 opacity-100"
-                : "border-slate-800/70 bg-slate-950/40 opacity-50"
+                ? "border-emerald-400/35 bg-[#090e1a] opacity-100"
+                : "border-white/[0.05] bg-[#080c16]/50 opacity-45"
             }`}
           >
             <div>
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold uppercase tracking-wider text-teal-300">
-                  3. Tailored Reply Draft
+              <div className="flex items-center justify-between gap-2">
+                <span className="text-[11px] font-medium tracking-[0.12em] text-emerald-300 uppercase">
+                  Drafted Reply
                 </span>
-                <span className="rounded-md border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-[11px] font-semibold text-emerald-300">
-                  KB + Tone Matched
+                <span className="rounded-full border border-emerald-400/20 bg-emerald-400/[0.08] px-2.5 py-0.5 text-[11px] text-emerald-200">
+                  KB Grounded
                 </span>
               </div>
 
-              <div className="mt-4 rounded-2xl rounded-tr-none border border-emerald-500/25 bg-emerald-950/25 p-4 text-sm leading-relaxed text-slate-100">
+              <div className="mt-4 rounded-2xl border border-emerald-400/15 bg-emerald-400/[0.04] p-4 text-sm leading-relaxed text-slate-100">
                 {simulationResult.draftReply}
               </div>
 
-              <div className="mt-4 space-y-2 rounded-xl border border-slate-800 bg-slate-900/50 p-3.5 text-xs text-slate-300">
+              <div className="mt-4 space-y-2 rounded-xl border border-white/[0.06] bg-white/[0.015] p-3.5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
-                  <span>Uses {currentPreset.businessName}&apos;s tone &amp; rules</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-300" />
+                  <span>Matches {currentPreset.businessName}’s tone</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-400" />
-                  <span>Guides customer toward booking or quote confirmation</span>
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-300" />
+                  <span>Prompts next step for booking or quote</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-4 flex items-center justify-between border-t border-slate-800 pt-3 text-xs">
-              <span className="text-slate-400">Quota usage: 1 reply</span>
+            <div className="mt-5 flex items-center justify-between border-t border-white/[0.06] pt-3 text-xs">
+              <span className="text-slate-400">Counts as 1 reply</span>
               <a
                 href={`/protected?plan=growth&billing=${billingCycle}`}
-                className="font-semibold text-emerald-400 hover:underline"
+                className="font-medium text-emerald-300 transition hover:text-emerald-200"
               >
-                Try in /protected →
+                Open in workspace →
               </a>
             </div>
           </div>
@@ -513,137 +528,144 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
       </div>
     </section>
 
-    {/* 2. LEADPILOT VS. GENERIC BOTS COMPARISON */}
+    {/* 2. LEADPILOT VS. GENERIC BOTS */}
     <section
       id="comparison"
-      className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:py-16"
+      className="mx-auto max-w-6xl px-5 py-16 sm:px-8 lg:py-20"
     >
-      <div className="mx-auto max-w-3xl text-center">
-        <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 px-3.5 py-1 text-xs font-semibold text-cyan-300">
-          <Layers className="h-3.5 w-3.5" />
-          LeadPilot vs. Generic Bots
+      <div className="mx-auto max-w-2xl text-center">
+        <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-xs font-medium text-slate-300">
+          <Layers className="h-3.5 w-3.5 text-emerald-300" />
+          Comparison
         </span>
-        <h2 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-4xl">
-          Why Businesses Switch From Generic Bots to LeadPilot
+        <h2 className="mt-4 text-2xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
+          Beyond generic auto-replies
         </h2>
         <p className="mt-3 text-sm leading-relaxed text-slate-400 sm:text-base">
-          Generic auto-responders send robotic greetings while generic
-          chatbots lack business structure. LeadPilot qualifies leads, scores
-          intent, and drafts context-accurate replies.
+          Standard auto-responders greet visitors without understanding intent.
+          LeadPilot extracts key details, scores leads, and drafts replies
+          rooted in your business rules.
         </p>
       </div>
 
       <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-2">
-        {/* Generic Bots */}
-        <div className="rounded-3xl border border-rose-500/25 bg-slate-900/45 p-6 sm:p-8">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-rose-300">
+        <div className="rounded-[24px] border border-white/[0.06] bg-white/[0.015] p-6 sm:p-8">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-lg font-medium text-slate-300">
               Generic Bots &amp; Basic Auto-Replies
             </h3>
-            <span className="rounded-full bg-rose-500/15 px-3 py-1 text-xs font-semibold text-rose-300">
-              Limited Context
+            <span className="rounded-full border border-white/[0.07] bg-white/[0.02] px-3 py-1 text-xs text-slate-400">
+              Surface-level
             </span>
           </div>
 
-          <ul className="mt-6 space-y-4 text-sm text-slate-300">
+          <ul className="mt-6 space-y-4 text-sm text-slate-400">
             <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-400" />
+              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
               <div>
-                <p className="font-semibold text-white">
-                  No Structured Lead Qualification
+                <p className="font-medium text-slate-200">
+                  Unstructured inquiry details
                 </p>
-                <p className="text-xs text-slate-400">
-                  Leaves service need, budget/quantity, and preferred timing buried in chat logs.
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Service need, budget or quantity, and timing stay buried in
+                  raw text.
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-400" />
+              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
               <div>
-                <p className="font-semibold text-white">No Lead Scoring</p>
-                <p className="text-xs text-slate-400">
-                  Harder to spot high-urgency appointments or bulk trade inquiries first.
+                <p className="font-medium text-slate-200">
+                  No intent or lead scoring
+                </p>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  High-urgency appointments and serious quotes look no
+                  different from casual browsing.
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-400" />
+              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
               <div>
-                <p className="font-semibold text-white">
-                  Generic Replies Without Your Knowledge Base
+                <p className="font-medium text-slate-200">
+                  Disconnected from your knowledge base
                 </p>
-                <p className="text-xs text-slate-400">
-                  Misses clinic timings, salon pricing tiers, or export quote requirements.
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Misses clinic hours, service tiers, or export quote terms.
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <XCircle className="mt-0.5 h-5 w-5 shrink-0 text-rose-400" />
+              <XCircle className="mt-0.5 h-4 w-4 shrink-0 text-rose-300/70" />
               <div>
-                <p className="font-semibold text-white">
-                  Unclear Quota &amp; Reply Controls
+                <p className="font-medium text-slate-200">
+                  Opaque reply volume &amp; draft workflow
                 </p>
-                <p className="text-xs text-slate-400">
-                  Less visibility into monthly reply usage and draft review before sending.
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Less clarity on monthly reply caps and review before
+                  sending.
                 </p>
               </div>
             </li>
           </ul>
         </div>
 
-        {/* LeadPilot */}
-        <div className="rounded-3xl border border-emerald-500/40 bg-gradient-to-b from-emerald-950/30 to-slate-900/75 p-6 sm:p-8 shadow-xl shadow-emerald-500/5">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-white">
+        <div className="rounded-[24px] border border-emerald-400/25 bg-gradient-to-b from-emerald-400/[0.06] to-white/[0.02] p-6 sm:p-8">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-lg font-medium text-white">
               LeadPilot for Indian SMBs
             </h3>
-            <span className="rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300">
-              Qualification + Drafts
+            <span className="rounded-full border border-emerald-400/25 bg-emerald-400/[0.1] px-3 py-1 text-xs font-medium text-emerald-200">
+              Structured &amp; Contextual
             </span>
           </div>
 
-          <ul className="mt-6 space-y-4 text-sm text-slate-200">
+          <ul className="mt-6 space-y-4 text-sm text-slate-300">
             <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
               <div>
-                <p className="font-semibold text-white">
-                  Automatic Field Extraction
+                <p className="font-medium text-white">
+                  Automatic field extraction
                 </p>
-                <p className="text-xs text-slate-300">
-                  Captures service needed, budget/quantity, urgency, preferred time &amp; context.
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Captures service needed, budget/quantity, urgency, and
+                  preferred time cleanly.
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
               <div>
-                <p className="font-semibold text-white">
-                  Clear Lead Scoring
+                <p className="font-medium text-white">
+                  Clear lead scoring
                 </p>
-                <p className="text-xs text-slate-300">
-                  Scores incoming inquiries so your team focuses on high-intent leads first.
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Prioritizes high-intent leads so your team responds to
+                  what matters first.
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
               <div>
-                <p className="font-semibold text-white">
-                  Custom Knowledge Base &amp; Brand Tone
+                <p className="font-medium text-white">
+                  Knowledge base &amp; tone alignment
                 </p>
-                <p className="text-xs text-slate-300">
-                  Drafts replies aligned with your services, rates, hours, and communication style.
+                <p className="mt-0.5 text-xs text-slate-400">
+                  Drafts replies using your actual pricing, hours, policies,
+                  and brand voice.
                 </p>
               </div>
             </li>
             <li className="flex items-start gap-3">
-              <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+              <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300" />
               <div>
-                <p className="font-semibold text-white">
-                  Enforced Monthly Reply Quotas
+                <p className="font-medium text-white">
+                  Predictable monthly reply quotas
                 </p>
-                <p className="text-xs text-slate-300">
-                  Predictable plan limits (1,500 / 5,000 / 15,000 replies per month) with live tracking.
+                <p className="mt-0.5 text-xs text-slate-400">
+                  1,500, 5,000, or 15,000 monthly AI replies tracked live in
+                  your workspace.
                 </p>
               </div>
             </li>
@@ -652,34 +674,34 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
       </div>
     </section>
 
-    {/* 3. PRICING CARDS (1m, 6m, 12m) + TERMS & QUOTA RULES */}
+    {/* 3. PRICING & TERMS */}
     <section
       id="pricing"
-      className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8 lg:pb-20"
+      className="mx-auto max-w-6xl px-5 py-12 sm:px-8 lg:pb-24"
     >
       <div className="flex flex-col items-start justify-between gap-6 md:flex-row md:items-end">
         <div>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3.5 py-1 text-xs font-semibold text-emerald-300">
-            <Award className="h-3.5 w-3.5" />
-            Pricing &amp; Billing Cycles
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/[0.08] bg-white/[0.03] px-3.5 py-1 text-xs font-medium text-slate-300">
+            <Award className="h-3.5 w-3.5 text-emerald-300" />
+            Pricing &amp; Billing
           </span>
-          <h2 className="mt-2.5 text-2xl font-bold tracking-tight text-white sm:text-4xl">
-            Choose Your Plan &amp; Billing Cycle
+          <h2 className="mt-3 text-2xl font-semibold tracking-[-0.02em] text-white sm:text-4xl">
+            Transparent plans &amp; billing cycles
           </h2>
-          <p className="mt-2 max-w-2xl text-sm text-slate-400 sm:text-base">
-            Select 1m, 6m, or 12m billing and click any plan button to open{" "}
-            <code className="rounded bg-slate-800 px-1.5 py-0.5 text-xs text-emerald-300">
+          <p className="mt-2 max-w-xl text-sm text-slate-400 sm:text-base">
+            Pick a billing cycle and plan to continue directly to{" "}
+            <code className="rounded bg-white/[0.05] px-1.5 py-0.5 text-xs text-emerald-200">
               /protected?plan=&lt;tier&gt;&amp;billing=&lt;cycle&gt;
             </code>
             .
           </p>
         </div>
 
-        {/* Billing Cycle Selector: 1m, 6m, 12m */}
+        {/* Billing Cycle Switcher */}
         <div
           role="group"
           aria-label="Select billing cycle"
-          className="inline-flex flex-wrap rounded-2xl border border-slate-800 bg-slate-900/90 p-1.5"
+          className="inline-flex flex-wrap rounded-full border border-white/[0.08] bg-white/[0.025] p-1"
         >
           {(["1m", "6m", "12m"] as BillingCycle[]).map((cycle) => {
             const active = billingCycle === cycle;
@@ -689,21 +711,15 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
                 key={cycle}
                 type="button"
                 onClick={() => setBillingCycle(cycle)}
-                className={`flex items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-semibold transition sm:text-sm ${
+                className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-medium transition duration-200 sm:text-[13px] ${
                   active
-                    ? "bg-emerald-500 text-slate-950 shadow"
-                    : "text-slate-300 hover:text-white"
+                    ? "bg-emerald-400/[0.16] text-emerald-200 border border-emerald-400/35"
+                    : "text-slate-400 hover:text-white border border-transparent"
                 }`}
               >
                 <span>{billingCycleLabel[cycle]}</span>
                 {badge && (
-                  <span
-                    className={`hidden rounded-full px-1.5 py-0.5 text-[10px] font-bold sm:inline-block ${
-                      active
-                        ? "bg-slate-950/20 text-slate-950"
-                        : "bg-emerald-500/15 text-emerald-300"
-                    }`}
-                  >
+                  <span className="hidden rounded-full bg-white/[0.05] px-2 py-0.5 text-[10px] text-emerald-200/90 sm:inline-block">
                     {badge}
                   </span>
                 )}
@@ -722,46 +738,46 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
           return (
             <div
               key={plan.tier}
-              className={`relative flex flex-col justify-between rounded-3xl border p-6 sm:p-8 transition ${
+              className={`relative flex flex-col justify-between rounded-[24px] border p-6 transition duration-200 sm:p-8 ${
                 plan.popular
-                  ? "border-emerald-400 bg-gradient-to-b from-slate-900 via-slate-900 to-[#0c1926] shadow-2xl shadow-emerald-500/10"
-                  : "border-slate-800 bg-slate-900/65 hover:border-slate-700"
+                  ? "border-emerald-400/35 bg-gradient-to-b from-emerald-400/[0.07] via-white/[0.02] to-white/[0.015]"
+                  : "border-white/[0.07] bg-white/[0.02] hover:border-white/[0.14]"
               }`}
             >
               {plan.popular && (
-                <div className="absolute -top-3.5 left-6 rounded-full bg-emerald-500 px-3 py-0.5 text-xs font-bold text-slate-950">
+                <div className="absolute -top-3 left-6 rounded-full border border-emerald-400/35 bg-[#0c1618] px-3 py-0.5 text-[11px] font-medium text-emerald-200">
                   Most Popular
                 </div>
               )}
 
               <div>
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-2xl font-bold text-white">
+                  <h3 className="text-xl font-semibold text-white">
                     {plan.name}
                   </h3>
-                  <span className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-300">
+                  <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-3 py-1 text-xs text-slate-300">
                     {plan.quotaLabel}
                   </span>
                 </div>
 
-                <p className="mt-2.5 text-sm leading-relaxed text-slate-400">
+                <p className="mt-3 text-sm leading-relaxed text-slate-400">
                   {plan.tagline}
                 </p>
 
-                <div className="mt-6 flex items-baseline gap-1.5 border-b border-slate-800 pb-6">
-                  <span className="inline-flex items-center text-4xl font-extrabold text-white">
-                    <IndianRupee className="h-7 w-7 text-slate-300" />
+                <div className="mt-6 flex items-baseline gap-1.5 border-b border-white/[0.07] pb-6">
+                  <span className="inline-flex items-center text-3xl font-semibold tracking-tight text-white sm:text-4xl">
+                    <IndianRupee className="h-6 w-6 text-slate-400" />
                     {price.toLocaleString("en-IN")}
                   </span>
-                  <span className="text-sm text-slate-400">
-                    / month • {billingCycle} cycle
+                  <span className="text-xs text-slate-400 sm:text-sm">
+                    / month · {billingCycle}
                   </span>
                 </div>
 
-                <ul className="mt-6 space-y-3 text-sm text-slate-200">
+                <ul className="mt-6 space-y-3 text-sm text-slate-300">
                   {plan.highlights.map((item) => (
                     <li key={item} className="flex items-start gap-2.5">
-                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-400" />
+                      <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-300/90" />
                       <span>{item}</span>
                     </li>
                   ))}
@@ -771,13 +787,15 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
               <div className="mt-8">
                 <a
                   href={planUrl}
-                  className={`flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-sm font-semibold transition ${
+                  className={`flex w-full items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-medium transition duration-200 ${
                     plan.popular
-                      ? "bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/20 hover:bg-emerald-400"
-                      : "border border-slate-700 bg-slate-800 text-white hover:border-emerald-400/50 hover:bg-slate-700"
+                      ? "border border-emerald-300/40 bg-emerald-400/[0.16] text-emerald-100 hover:bg-emerald-400/[0.24] hover:text-white"
+                      : "border border-white/[0.1] bg-white/[0.04] text-slate-200 hover:border-white/[0.2] hover:bg-white/[0.08] hover:text-white"
                   }`}
                 >
-                  Get Started with {plan.name} ({billingCycle})
+                  <span>
+                    Choose {plan.name} ({billingCycle})
+                  </span>
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </div>
@@ -787,64 +805,63 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
       </div>
 
       {/* Terms & Quota Rules */}
-      <div className="mt-10 rounded-3xl border border-slate-800 bg-slate-900/60 p-6 sm:p-8">
-        <div className="flex items-center gap-2 text-lg font-bold text-white">
-          <ShieldCheck className="h-5 w-5 text-emerald-400" />
-          Terms &amp; Quota Rules
+      <div className="mt-10 rounded-[24px] border border-white/[0.07] bg-white/[0.02] p-6 sm:p-8">
+        <div className="flex items-center gap-2 text-base font-medium text-white">
+          <ShieldCheck className="h-4 w-4 text-emerald-300" />
+          <span>Terms &amp; Quota Rules</span>
         </div>
 
         <div className="mt-5 grid grid-cols-1 gap-4 text-sm text-slate-300 md:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/75 p-4">
-            <p className="flex items-center gap-1.5 font-semibold text-white">
-              <Zap className="h-4 w-4 text-emerald-400" />
-              Monthly AI Reply Quotas
+          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
+              <Zap className="h-3.5 w-3.5 text-emerald-300" />
+              Monthly Reply Quotas
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              Each plan includes a strict monthly AI reply quota:{" "}
-              <strong className="text-slate-200">Starter: 1,500</strong>,{" "}
-              <strong className="text-slate-200">Growth: 5,000</strong>, and{" "}
-              <strong className="text-slate-200">Pro: 15,000</strong> AI
-              replies per month.
+              Monthly AI reply caps are{" "}
+              <span className="text-slate-200">1,500</span> on Starter,{" "}
+              <span className="text-slate-200">5,000</span> on Growth, and{" "}
+              <span className="text-slate-200">15,000</span> on Pro.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/75 p-4">
-            <p className="flex items-center gap-1.5 font-semibold text-white">
-              <Sparkles className="h-4 w-4 text-cyan-400" />
+          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
+              <Sparkles className="h-3.5 w-3.5 text-emerald-300" />
               Trial Status
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              Workspaces can start in{" "}
-              <strong className="text-slate-200">trial</strong> status so
-              you can configure your business profile, knowledge base, and
-              lead workflow while testing AI replies against your plan cap.
+              New workspaces can start in{" "}
+              <span className="text-slate-200">trial</span> status to
+              configure your business profile, knowledge base, and lead
+              workflow while testing replies within your plan limit.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/75 p-4">
-            <p className="flex items-center gap-1.5 font-semibold text-white">
-              <HelpCircle className="h-4 w-4 text-amber-400" />
-              When Monthly Quota Is Reached
+          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
+              <HelpCircle className="h-3.5 w-3.5 text-amber-300/90" />
+              Quota Limit Reached
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              Once <code className="text-slate-200">monthly_replies_used</code>{" "}
+              When <code className="text-slate-200">monthly_replies_used</code>{" "}
               reaches <code className="text-slate-200">monthly_reply_limit</code>,
-              new AI reply generation is blocked with a quota limit notice
-              until your quota resets or you upgrade to a higher plan.
+              new AI reply generation pauses until quota renewal or plan
+              upgrade.
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-950/75 p-4">
-            <p className="flex items-center gap-1.5 font-semibold text-white">
-              <Sliders className="h-4 w-4 text-purple-400" />
+          <div className="rounded-2xl border border-white/[0.06] bg-[#070b14]/60 p-4">
+            <p className="flex items-center gap-1.5 text-xs font-medium text-white">
+              <Sliders className="h-3.5 w-3.5 text-slate-300" />
               Billing Cycle &amp; Expiry
             </p>
             <p className="mt-1.5 text-xs leading-relaxed text-slate-400">
-              Selecting <strong className="text-slate-200">1m</strong>,{" "}
-              <strong className="text-slate-200">6m</strong>, or{" "}
-              <strong className="text-slate-200">12m</strong> sets your
-              billing cycle, monthly reply limit, and plan expiry date when
-              you save your business profile.
+              Choosing <span className="text-slate-200">1m</span>,{" "}
+              <span className="text-slate-200">6m</span>, or{" "}
+              <span className="text-slate-200">12m</span> sets your billing
+              cycle, monthly quota, and expiry date when saving your
+              profile.
             </p>
           </div>
         </div>
@@ -853,17 +870,17 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
   </main>
 
   {/* Footer */}
-  <footer className="relative z-10 border-t border-slate-800/80 bg-[#050810]">
-    <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-6 text-xs text-slate-400 sm:flex-row sm:px-6 lg:px-8">
-      <p>LeadPilot • AI Lead Qualification &amp; Contextual Replies</p>
-      <div className="flex items-center gap-5">
-        <a href="#bot-in-action" className="hover:text-white">
+  <footer className="relative z-10 border-t border-white/[0.06] bg-[#060911]">
+    <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-5 py-6 text-xs text-slate-500 sm:flex-row sm:px-8">
+      <p>LeadPilot · Lead Qualification &amp; Contextual Reply Drafting</p>
+      <div className="flex items-center gap-6">
+        <a href="#bot-in-action" className="transition hover:text-slate-300">
           Bot in Action
         </a>
-        <a href="#comparison" className="hover:text-white">
+        <a href="#comparison" className="transition hover:text-slate-300">
           Comparison
         </a>
-        <a href="#pricing" className="hover:text-white">
+        <a href="#pricing" className="transition hover:text-slate-300">
           Pricing &amp; Terms
         </a>
       </div>
@@ -871,4 +888,5 @@ return ( <div className="min-h-screen bg-[#060913] text-slate-100 selection:bg-e
   </footer>
 </div>
 ); }
+
 
